@@ -8,7 +8,7 @@ action_state gpro_t;
 //static void Single_Power_ReceiveCmd(uint8_t cmd);
 static void Single_Command_ReceiveCmd(uint8_t cmd); 
 static void Fan_ContinueRun_OneMinute_Fun(void);
-static void Current_Works_State(void);
+
 static void Works_Rest_Cycle_TenMinutes(void);
 
 
@@ -283,14 +283,14 @@ void PowerOn_Run_Pro(void)
        else{
 	
          if(run_t.interval_time_stop_run ==0){
-           Current_Works_State();
+           mainboard_run_handler();
 	    
           }
           else{
 
 	
 			    
-			Works_Rest_Cycle_TenMinutes();
+			
             }
         }
 	
@@ -352,12 +352,12 @@ void PowerOff_Run_Pro(void)
 
 /**********************************************************************************
 *
-*Function Name: static void Current_Works_State(void)
+*Function Name: static void mainboard_run_handler(void)
 *
 *
 *
 **********************************************************************************/
-static void Current_Works_State(void)
+void mainboard_run_handler(void)
 {
 
 	  switch(run_state){
@@ -366,7 +366,7 @@ static void Current_Works_State(void)
 
 			case 0:
 
-				if(run_t.gTimer_ptc_adc_times > 3){ //3 minutes 120s
+				if(run_t.gTimer_ptc_adc_times > 3 && run_t.interval_time_stop_run ==0){ //3 minutes 120s
 					run_t.gTimer_ptc_adc_times=0;
 					Get_PTC_Temperature_Voltage(ADC_CHANNEL_1,10);
 					//run_t.ptc_temp_voltage=200;
@@ -379,7 +379,7 @@ static void Current_Works_State(void)
 
 		    case 3:
 			
-				if(run_t.gTimer_fan_adc_times > 8){ //2 minute 180s
+				if(run_t.gTimer_fan_adc_times > 8 && run_t.interval_time_stop_run ==0){ //2 minute 180s
 					run_t.gTimer_fan_adc_times =0;
 
 				 
@@ -408,25 +408,24 @@ static void Current_Works_State(void)
 
 			case 5:
 
-				  if(run_t.gFan_continueRun ==1 && run_t.interval_time_stop_run ==0){
+				  if(run_t.interval_time_stop_run ==0){
 
-					if(run_t.gTimer_fan_run_one_minutes < 60){
-
-					   Fan_Run_Fun();
-					}       
-
-					if(run_t.gTimer_fan_run_one_minutes > 59){
-
-					run_t.gTimer_fan_run_one_minutes=0;
-
-					run_t.gFan_continueRun++;
-					FAN_Stop();
-					}
+					ActionEvent_Handler();
 
 				  }
-	              if(run_t.interval_time_stop_run ==0) run_state =6;
+                  else {
 
-		   break;
+                       Works_Rest_Cycle_TenMinutes();
+
+                  }
+	               run_state =6;
+
+		   
+
+
+                 
+
+           break;
 
 		   case  6:
            if(run_t.fan_warning ==1 && run_t.gPower_On == POWER_ON){
@@ -631,7 +630,8 @@ void ActionEvent_Handler(void)
 
     }
 
-   // fan_run_handler();
+   //fan_run_handler();
+   Fan_CCW_Run_Max();
 
     }
 			

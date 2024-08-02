@@ -207,6 +207,7 @@ extern RUN_T run_t;
 void  RunCommand_MainBoard_Fun(void);
 
 
+void mainboard_run_handler(void);
 
 
 
