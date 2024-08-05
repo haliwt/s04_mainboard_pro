@@ -95,6 +95,7 @@ void Single_Power_ReceiveCmd(uint8_t cmd)
       
 	
 	   run_t.RunCommand_Label= POWER_OFF;
+       run_t.run_masin_process_step =0;
        Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
 
  
@@ -107,6 +108,7 @@ void Single_Power_ReceiveCmd(uint8_t cmd)
         
 		 // printf("pon\n");
          run_t.RunCommand_Label= POWER_ON;
+         run_t.run_masin_process_step =0;
         Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_ON);
       
      cmd=0xff;  
@@ -272,7 +274,7 @@ void PowerOn_Run_Pro(void)
 		 run_t.ptc_warning =0;
 		 run_t.gTimer_ptc_adc_times=0;
 		 run_t.open_ptc_detected_flag=0;
-        
+        run_t.power_on_send_data_flag=0;
 
         run_t.gPower_On=POWER_ON;
     
@@ -280,23 +282,8 @@ void PowerOn_Run_Pro(void)
      	
 	
         }
-       else{
-	
-         if(run_t.interval_time_stop_run ==0){
-           mainboard_run_handler();
-	    
-          }
-          else{
-
-	
-			    
-			
-            }
-        }
-	
     
-
- }
+}
 
 
 void PowerOff_Run_Pro(void)
@@ -360,11 +347,33 @@ void PowerOff_Run_Pro(void)
 void mainboard_run_handler(void)
 {
 
-	  switch(run_state){
+	  switch(run_t.run_masin_process_step){
 
-		   
+		   case 0:
 
-			case 0:
+    
+            run_t.power_on_send_data_flag=0;
+
+            run_t.gPower_On = POWER_ON;
+            run_t.gTimer_read_dht11_temp_value=20;
+            run_t.gTimer_continuce_works_time=0;
+            run_t.interval_time_stop_run=0;
+            run_t.fan_warning =0;
+            run_t.ptc_warning =0;
+            run_t.gTimer_ptc_adc_times=0;
+            run_t.open_ptc_detected_flag=0;
+            run_t.power_on_send_data_flag=0;
+
+            run_t.gPower_On=POWER_ON;
+
+            SetPowerOn_ForDoing();
+     	
+	
+            run_state =1;
+
+           break;
+
+			case 1:
 
 				if(run_t.gTimer_ptc_adc_times > 3 && run_t.interval_time_stop_run ==0){ //3 minutes 120s
 					run_t.gTimer_ptc_adc_times=0;
@@ -392,7 +401,17 @@ void mainboard_run_handler(void)
 			break;
 
 
-			case 4:
+            case 4:
+
+                
+                  Read_TempSensor_Data();
+                  run_state =5;
+
+
+            break;
+
+
+			case 5:
 
 				if(run_t.gTimer_continuce_works_time > 7200){
 			     run_t.gTimer_continuce_works_time =0;
@@ -402,32 +421,27 @@ void mainboard_run_handler(void)
 			    }
 
 				if(run_t.interval_time_stop_run ==0)
-					run_state =5;
+					run_state =6;
 				
 			break;
 
-			case 5:
+			case 6:
 
-				  if(run_t.interval_time_stop_run ==0){
+              if(run_t.interval_time_stop_run ==0){
 
-					ActionEvent_Handler();
+				ActionEvent_Handler();
 
-				  }
-                  else {
+				}
+                else {
 
                        Works_Rest_Cycle_TenMinutes();
 
-                  }
-	               run_state =6;
+                 }
+	               run_state =7;
 
-		   
+		  break;
 
-
-                 
-
-           break;
-
-		   case  6:
+		   case  7:
            if(run_t.fan_warning ==1 && run_t.gPower_On == POWER_ON){
 
                if(run_t.gTimer_fan_adc_times > 1 ){
@@ -476,7 +490,7 @@ void mainboard_run_handler(void)
 		     }
 
 		   }
-		    run_state =0;
+		    run_state =1;
 		   break;
 
 		}
@@ -640,8 +654,8 @@ void ActionEvent_Handler(void)
 
 void Read_TempSensor_Data(void)
 {
-  if((run_t.gTimer_read_dht11_temp_value>4 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 2){
-        run_t.power_on_send_data_flag ++ ;
+  if((run_t.gTimer_read_dht11_temp_value>6 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 2){
+        run_t.power_on_send_data_flag = 3 ;
         run_t.gTimer_read_dht11_temp_value=0;
         Update_DHT11_Value();
 

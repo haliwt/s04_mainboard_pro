@@ -111,6 +111,7 @@ typedef struct _RUN_T{
     
 
 	uint8_t RunCommand_Label;
+    uint8_t run_masin_process_step;
 	//buzzer
 	uint8_t buzzer_sound_flag ;
   
