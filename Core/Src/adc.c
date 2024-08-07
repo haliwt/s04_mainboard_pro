@@ -213,6 +213,8 @@ void Get_PTC_Temperature_Voltage(uint32_t channel,uint8_t times)
 	#if DEBUG
       printf("ptc= %d",run_t.ptc_temp_voltage);
 	#endif 
+
+   // run_t.ptc_temp_voltage = 200; //by test data 
 }
 
 
@@ -287,10 +289,11 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
 			   		detect_error_times=0;
 		           run_t.fan_warning = 1;
                    run_t.gDry =0 ;
-                   run_t.gPlasma =0;
+             
 	               PTC_SetLow(); //turn off
-	               PLASMA_SetLow();
-                   
+	             
+        
+	
 				
 			       HAL_Delay(200);
 			       buzzer_sound();//Buzzer_KeySound();
