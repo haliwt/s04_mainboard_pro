@@ -37,7 +37,7 @@
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
-    static uint16_t tm0;
+    static uint16_t tm0,tm1;
     if(htim->Instance==TIM17){
 		
 	   tm0 ++ ;
@@ -45,17 +45,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
        if(tm0>999){
 
          tm0 =0;
+         tm1++;
          run_t.gTimer_senddata_panel++;
          run_t.gTimer_read_dht11_temp_value++;
          run_t.gTimer_ptc_adc_times ++;
     
-         run_t.gTimer_continuce_works_time++;
+         
          run_t.gTimer_fan_adc_times++;
      
          run_t.gTimer_fan_run_one_minutes++;
          run_t.gTime_run_board_action++;
          
+         
+        if(tm1> 59){ // 1 minute
 
+          tm1 =0; 
+
+          run_t.gTimer_continuce_works_time ++ ;
+
+
+        }
 
 
        }

@@ -369,7 +369,7 @@ void mainboard_run_handler(void)
             SetPowerOn_ForDoing();
      	
 	
-            run_state =1;
+            run_t.run_masin_process_step =1;
 
            break;
 
@@ -383,7 +383,7 @@ void mainboard_run_handler(void)
 
 
 				}
-				 run_state =3;
+				 run_t.run_masin_process_step =3;
             break;
 
 		    case 3:
@@ -397,52 +397,11 @@ void mainboard_run_handler(void)
 	                
 
 				}
-	              run_state =4;
+	              run_t.run_masin_process_step=4;
 			break;
-
-
-            case 4:
-
-                
-                  Read_TempSensor_Data();
-                  run_state =5;
-
-
-            break;
-
-
-			case 5:
-
-				if(run_t.gTimer_continuce_works_time > 7200){
-			     run_t.gTimer_continuce_works_time =0;
-		         run_t.interval_time_stop_run =1;
-			     run_t.gFan_continueRun =1;
-				 run_t.gTimer_fan_run_one_minutes=0;
-			    }
-
-				if(run_t.interval_time_stop_run ==0)
-					run_state =6;
-				
-			break;
-
-			case 6:
-
-              if(run_t.interval_time_stop_run ==0){
-
-				ActionEvent_Handler();
-
-				}
-                else {
-
-                       Works_Rest_Cycle_TenMinutes();
-
-                 }
-	               run_state =7;
-
-		  break;
-
-		   case  7:
-           if(run_t.fan_warning ==1 && run_t.gPower_On == POWER_ON){
+			
+		   case  4:
+           if(run_t.fan_warning ==1){
 
                if(run_t.gTimer_fan_adc_times > 1 ){
 			   run_t.gTimer_fan_adc_times=0;
@@ -467,7 +426,7 @@ void mainboard_run_handler(void)
 		   
 
 
-		   if(run_t.ptc_warning==1 && run_t.gPower_On == POWER_ON){
+		   if(run_t.ptc_warning==1){
 
 		     if(run_t.gTimer_ptc_adc_times > 2){
 			 	run_t.gTimer_ptc_adc_times=0;
@@ -490,7 +449,7 @@ void mainboard_run_handler(void)
 		     }
 
 		   }
-		    run_state =1;
+		   run_t.run_masin_process_step=1;
 		   break;
 
 		}
@@ -507,17 +466,15 @@ static void Works_Rest_Cycle_TenMinutes(void)
 {
 	
 
-	if(run_t.gTimer_continuce_works_time < 600){
+	if(run_t.gTimer_continuce_works_time < 10){
 		PLASMA_SetLow(); //
 		Ultrasonic_Pwm_Stop();//HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic Off 
 		PTC_SetLow(); 
     }
-
-	if(run_t.gTimer_continuce_works_time > 600){
+    else if(run_t.gTimer_continuce_works_time > 10){
 		run_t.gTimer_continuce_works_time=0;
 		run_t.interval_time_stop_run =0;
-        
-		run_state =0;
+  
 
 
 	}
@@ -661,6 +618,37 @@ void Read_TempSensor_Data(void)
 
     }
 
+
+}
+
+
+void works_two_hours_detected_handler(void)
+{
+
+
+    switch(run_t.interval_time_stop_run ){
+
+
+    case 0:
+    
+    if(run_t.gTimer_continuce_works_time > 11){//120
+        run_t.gTimer_continuce_works_time =0;
+        run_t.interval_time_stop_run =1;
+        run_t.gFan_continueRun =1;
+        run_t.gTimer_fan_run_one_minutes=0;
+      }
+
+       ActionEvent_Handler();
+
+      break;
+
+    case 1:
+
+        Works_Rest_Cycle_TenMinutes();
+
+    break;
+
+    }
 
 }
 

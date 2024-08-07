@@ -48,7 +48,9 @@ uint8_t decoder_flag;
 
 uint8_t ulid,uldata,usdata;
 
-uint8_t  space_key = 0x20;
+uint8_t test_counter;
+
+//uint8_t  space_key = 0x20;
 /*
 *********************************************************************************************************
 *	凄1�7 敄1�7 各1�7: vTaskTaskUserIF
@@ -104,7 +106,9 @@ static void vTaskMsgPro(void *pvParameters)
 
              Read_TempSensor_Data();
 
-            
+             works_two_hours_detected_handler();
+
+             test_counter ++;
 
       }
       else{
@@ -115,7 +119,7 @@ static void vTaskMsgPro(void *pvParameters)
 
     
    
-     vTaskDelay(20);
+     vTaskDelay(100);
      
     }
 
@@ -133,7 +137,7 @@ static void vTaskStart(void *pvParameters)
 {
     MSG_T *ptMsg;
 	BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(30); /* 1.测试设定的-设置最大等待时间为50ms */
+	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
 
 	
     while(1)
@@ -204,9 +208,9 @@ void AppTaskCreate (void)
 	
 	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
                  "vTaskMsgPro",   		/* 任务各1�7    */
-                 256,             		/* 任务栈大小，单位word，也就是4字节 */
+                 128,             		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 2,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
@@ -214,7 +218,7 @@ void AppTaskCreate (void)
                  "vTaskStart",   		/* 任务各1�7    */
                  128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 
@@ -228,7 +232,6 @@ void AppTaskCreate (void)
 *	迄1�7 囄1�7 倄1�7: 旄1�7
 *********************************************************************************************************
 */
-# if 1 
 void AppObjCreate (void)
 {
     #if 1
@@ -269,7 +272,7 @@ void AppObjCreate (void)
     #endif 
 }
 
-#endif 
+
 /********************************************************************************
 	**
 	*Function Name:void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)

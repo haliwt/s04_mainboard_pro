@@ -188,7 +188,7 @@ typedef struct _RUN_T{
 	uint8_t  work_time_minutes_two;
     uint8_t  gTime_run_board_action ;
 
-	uint16_t gTimer_continuce_works_time;
+	uint8_t gTimer_continuce_works_time;
 	uint16_t fan_detect_voltage; 
 	
 	uint16_t ptc_temp_voltage;
@@ -240,6 +240,8 @@ void PowerOff_Run_Pro(void);
 
 void Decode_RunCmd(uint8_t cmdType_1, uint8_t cmdType_2);
 
+
+void works_two_hours_detected_handler(void);
 
 #endif 
 
