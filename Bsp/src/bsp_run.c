@@ -264,7 +264,7 @@ void PowerOn_Run_Pro(void)
        power_on_flag ++;
        power_off_flag=0;
    
-	   run_t.power_on_send_data_flag=0;
+	 
 	 
         run_t.gPower_On = POWER_ON;
 		run_t.gTimer_read_dht11_temp_value=20;
@@ -352,7 +352,7 @@ void mainboard_run_handler(void)
 		   case 0:
 
     
-            run_t.power_on_send_data_flag=0;
+
 
             run_t.gPower_On = POWER_ON;
             run_t.gTimer_read_dht11_temp_value=20;
@@ -611,9 +611,9 @@ void ActionEvent_Handler(void)
 
 void Read_TempSensor_Data(void)
 {
-  if((run_t.gTimer_read_dht11_temp_value>6 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 2){
-        run_t.power_on_send_data_flag = 3 ;
-        run_t.gTimer_read_dht11_temp_value=0;
+  if((run_t.gTimer_read_dht11_temp_value>6 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 10){
+       run_t.gTimer_read_dht11_temp_value=0;
+       run_t.power_on_send_data_flag ++;
         Update_DHT11_Value();
 
     }
