@@ -631,7 +631,7 @@ void works_two_hours_detected_handler(void)
 
     case 0:
     
-    if(run_t.gTimer_continuce_works_time > 11){//120
+    if(run_t.gTimer_continuce_works_time > 120){//120
         run_t.gTimer_continuce_works_time =0;
         run_t.interval_time_stop_run =1;
         run_t.gFan_continueRun =1;
