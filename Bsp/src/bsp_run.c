@@ -17,8 +17,9 @@ volatile uint8_t run_state =0;
 
 
 
-uint8_t power_off_flag;
+
 uint8_t power_on_flag;
+uint8_t power_off_fan;
 
 
 
@@ -96,7 +97,8 @@ void Single_Power_ReceiveCmd(uint8_t cmd)
 	
 	   run_t.RunCommand_Label= POWER_OFF;
        run_t.run_masin_process_step =0;
-       Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
+       run_t.power_off_flag =0;
+      // Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
 
  
 
@@ -109,7 +111,8 @@ void Single_Power_ReceiveCmd(uint8_t cmd)
 		 // printf("pon\n");
          run_t.RunCommand_Label= POWER_ON;
          run_t.run_masin_process_step =0;
-        Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_ON);
+         run_t.power_off_flag =0;
+      //  Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_ON);
       
      cmd=0xff;  
      break;
@@ -262,7 +265,7 @@ void PowerOn_Run_Pro(void)
   
    if(power_on_flag ==0){
        power_on_flag ++;
-       power_off_flag=0;
+     
    
 	 
 	 
@@ -288,12 +291,13 @@ void PowerOn_Run_Pro(void)
 
 void PowerOff_Run_Pro(void)
 {
-    static uint8_t power_off_fan;
-       switch(power_off_flag){
+
+      
+       switch(run_t.power_off_flag){
 
        case 0:
 
-          power_on_flag=0;
+         power_on_flag=0;
 	     run_t.gPower_On = POWER_OFF;
 		 run_t.power_on_send_data_flag=0;
 	     run_t.gTimer_continuce_works_time=0;
@@ -315,21 +319,21 @@ void PowerOff_Run_Pro(void)
 			run_t.gFan_continueRun =1;
 		}
 	
-	
-	   power_off_flag= FAN_CONTINUCE_RUN_ONE_MINUTE;
+	   power_off_fan =1;
+	   run_t.power_off_flag= FAN_CONTINUCE_RUN_ONE_MINUTE;
 	 break;
 
 
      case  FAN_CONTINUCE_RUN_ONE_MINUTE: //7
 
-	   if(power_off_flag==0){
-		 	power_off_flag++;
-			SetPowerOff_ForDoing();
-          //  Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
-     
-		 }
+	    if(power_off_fan==1){
+              power_off_fan++;
+		   SetPowerOff_ForDoing();
          
-	     Fan_ContinueRun_OneMinute_Fun();
+          //  Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
+         }
+     
+		Fan_ContinueRun_OneMinute_Fun();
 
 	break;
 
@@ -350,9 +354,6 @@ void mainboard_run_handler(void)
 	  switch(run_t.run_masin_process_step){
 
 		   case 0:
-
-    
-
 
             run_t.gPower_On = POWER_ON;
             run_t.gTimer_read_dht11_temp_value=20;
@@ -501,7 +502,7 @@ static void Works_Rest_Cycle_TenMinutes(void)
 static void Fan_ContinueRun_OneMinute_Fun(void)
 {
 
-	if(run_t.gFan_continueRun ==1 && run_t.gPower_On ==POWER_OFF){
+	if(run_t.gFan_continueRun ==1 ){
 
 	if(run_t.gTimer_fan_run_one_minutes < 60){
 
@@ -539,11 +540,11 @@ void SetPowerOn_ForDoing(void)
 void SetPowerOff_ForDoing(void)
 {
 
-   
+   run_t.gFan_continueRun =1;
 	
 	run_t.gPower_On = POWER_OFF;
 
- 
+    run_t.gTimer_fan_run_one_minutes=0;
    
     run_t.gDry = 0;
 	run_t.gPlasma =0;       //"??"

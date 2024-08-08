@@ -89,6 +89,7 @@ static void vTaskMsgPro(void *pvParameters)
         power_on_sound_flag ++;
 
        //Buzzer_KeySound(void);
+        run_t.power_off_flag = 0xff;
         buzzer_sound();
 
     }
