@@ -143,8 +143,11 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
 	   case DRY_ON_NO_BUZZER:
 
 	  case DRY_ON:
-         run_t.gDry = 1;
-         PTC_SetHigh();
+         if(run_t.interval_time_stop_run ==0){ //WT.EDIT 2024.08.26
+             run_t.gDry = 1;
+             PTC_SetHigh();
+
+         }
 
        break;
 
@@ -156,17 +159,22 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
 	  break;
 
        case PLASMA_ON:
+
+           if(run_t.interval_time_stop_run ==0){ //WT.EDIT 2024.08.26
        		run_t.gPlasma=1;
           
             PLASMA_SetHigh();
-		 
+            }
 	  
 	    
        break;
 
        case PLASM_ON_NO_BUZZER:
+         if(run_t.interval_time_stop_run ==0){ //WT.EDIT 2024.08.26
            run_t.gPlasma=1;
            PLASMA_SetHigh();
+
+            }
 
 
        break;
@@ -189,8 +197,11 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
 
 
 	   case MOUSE_RUN : //this is fan_speed_max
+	     if(run_t.interval_time_stop_run ==0){ //WT.EDIT 2024.08.26
 	   	  gpro_t.gmouse=mouse_run;
           Ultrasonic_Pwm_Output();
+
+          }
        
 	  break;
 
