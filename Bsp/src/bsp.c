@@ -18,6 +18,8 @@ buzzer_init();
 void receive_data_fromm_display(uint8_t *pdata)
 {
 
+  // static uint8_t first_power_on ;
+
    if(pdata[1] == 0x01){
 
     switch(pdata[2]){
@@ -31,8 +33,13 @@ void receive_data_fromm_display(uint8_t *pdata)
 
         if(pdata[3] == 0x01){ //open
            buzzer_sound();
-
+           
            run_t.RunCommand_Label= POWER_ON;
+//           if(first_power_on ==0){
+//              first_power_on ++ ;
+//              Dht11_Read_TempHumidity_Handler(&DHT11);
+//              sendData_Real_TimeHum(run_t.gDht11_humidity ,run_t.gDht11_temperature);
+//	        }
 
         }
         else if(pdata[3] == 0x0){ //close 

@@ -107,7 +107,7 @@ void sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
 
 
 }
-void SendWifiData_To_OnlyTemp(uint8_t temp)
+void SendData_OnlyTemp(uint8_t temp)
 {
    
 	
@@ -140,14 +140,14 @@ void SendWifiData_To_OnlyTemp(uint8_t temp)
 *Return Ref:NO
 *
 *******************************************************************************/
-void SendWifiData_To_OnlyHumidity(uint8_t hum)
+void SendData_OnlyHumidity(uint8_t hum)
 {
    
         outputBuf[0]=0x5A; //main board head = 0xA5
         outputBuf[1]=0x10; //display device Number:is 0x01
         outputBuf[2]=0x1B; // command type = 0x1A -> temperature of value 
         outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
-        outputBuf[4]=0x02; // data is length: 00 ->don't data 
+        outputBuf[4]=0x01; // data is length: 00 ->don't data 
         outputBuf[5]=hum; // frame of end code -> 0xFE.
         outputBuf[6]=0xFE; // frame of end code -> 0xFE.
         outputBuf[7] = bcc_check(outputBuf,7);

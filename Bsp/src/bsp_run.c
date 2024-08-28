@@ -623,10 +623,12 @@ void ActionEvent_Handler(void)
 
 void Read_TempSensor_Data(void)
 {
-  if((run_t.gTimer_read_dht11_temp_value>6 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 10){
+  if((run_t.gTimer_read_dht11_temp_value>5 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 10){
        run_t.gTimer_read_dht11_temp_value=0;
        run_t.power_on_send_data_flag ++;
         Update_DHT11_Value();
+        osDelay(50);
+        buzzer_sound();
 
     }
 

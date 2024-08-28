@@ -102,13 +102,13 @@ static void vTaskMsgPro(void *pvParameters)
 
      if(run_t.RunCommand_Label== POWER_ON){
         
-             mainboard_run_handler();
 
              Read_TempSensor_Data();
+             mainboard_run_handler();
 
-             works_two_hours_detected_handler();
+              works_two_hours_detected_handler();
 
-            // test_counter ++;
+     
 
       }
       else{
@@ -119,7 +119,7 @@ static void vTaskMsgPro(void *pvParameters)
 
     
    
-     vTaskDelay(100);
+     vTaskDelay(50);
      
     }
 
@@ -196,7 +196,7 @@ void AppTaskCreate (void)
                  "vTaskMsgPro",   		/* 任务各1�7    */
                  128,             		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 2,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
@@ -204,7 +204,7 @@ void AppTaskCreate (void)
                  "vTaskStart",   		/* 任务各1�7    */
                  128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 
