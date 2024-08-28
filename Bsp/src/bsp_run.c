@@ -385,84 +385,22 @@ void mainboard_run_handler(void)
 
            break;
 
-			case 1:
+		   case 1:
 
 				if(run_t.gTimer_ptc_adc_times > 3 && run_t.interval_time_stop_run ==0){ //3 minutes 120s
 					run_t.gTimer_ptc_adc_times=0;
-					Get_PTC_Temperature_Voltage(ADC_CHANNEL_1,10);
+					Get_PTC_Temperature_Voltage(ADC_CHANNEL_1,1);
+                     osDelay(100);
 					//run_t.ptc_temp_voltage=200;
 					Judge_PTC_Temperature_Value();
 
 
 				}
-				 run_t.run_masin_process_step =3;
+				 
             break;
 
-		    case 3:
-			    if(run_t.gTimer_fan_adc_times > 8 && run_t.interval_time_stop_run ==0){ //2 minute 180s
-					run_t.gTimer_fan_adc_times =0;
-
-				 
-					Get_Fan_Adc_Fun(ADC_CHANNEL_0,10);
-				
-	                
-
-			 }
-				
-	              run_t.run_masin_process_step=4;
-			break;
-			
-		   case  4:
-           if(run_t.fan_warning ==1){
-
-               if(run_t.gTimer_fan_adc_times > 1 ){
-			   run_t.gTimer_fan_adc_times=0;
-
-			   	#if DEBUG
-				 printf("fan_warning\n");
-
-				#endif
-		       HAL_Delay(200);
-		       buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   SendWifiCmd_To_Order(FAN_WARNING);
-			  
-               	}
-		   	}
-		   
-
-
-		   if(run_t.ptc_warning==1){
-
-		     if(run_t.gTimer_ptc_adc_times > 2){
-			 	run_t.gTimer_ptc_adc_times=0;
-		   	    
-			   #if DEBUG
-				 printf("ptc_warning\n");
-
-				#endif 
-		         buzzer_sound();//Buzzer_KeySound();
-                HAL_Delay(200);
-		       buzzer_sound();//Buzzer_KeySound();
-		      HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   buzzer_sound();//Buzzer_KeySound();
-		       HAL_Delay(100);
-			   SendWifiCmd_To_Order(PTC_WARNING);
-		     }
-
-		   }
-		   run_t.run_masin_process_step=1;
-		   break;
+		  
+           
 
 		}
 }
@@ -633,7 +571,7 @@ void Read_TempSensor_Data(void)
        dc_power_on_times++ ;
    
         Update_DHT11_Value();
-        osDelay(10);
+        osDelay(20);
         buzzer_sound();
 
     }
@@ -641,7 +579,7 @@ void Read_TempSensor_Data(void)
        run_t.gTimer_read_dht11_temp_value=0;
    
         Update_DHT11_Value();
-        osDelay(5);
+        osDelay(100);
         buzzer_sound();
 
     }
@@ -680,3 +618,76 @@ void works_two_hours_detected_handler(void)
 
 }
 
+
+void fan_detected_adc_fun(void)
+{
+    if(run_t.gTimer_fan_adc_times > 8 && run_t.interval_time_stop_run ==0){ //2 minute 180s
+					run_t.gTimer_fan_adc_times =0;
+
+				 
+					Get_Fan_Adc_Fun(ADC_CHANNEL_0,1);
+                    osDelay(100);
+				
+	                
+
+			 }
+
+
+}
+
+
+void error_detected_codes_handler(void)
+{
+   if(run_t.fan_warning ==1){
+
+               if(run_t.gTimer_fan_adc_times > 1 ){
+			   run_t.gTimer_fan_adc_times=0;
+
+			   	#if DEBUG
+				 printf("fan_warning\n");
+
+				#endif
+		       HAL_Delay(200);
+		       buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   SendWifiCmd_To_Order(FAN_WARNING);
+			  
+               	}
+		   	}
+		   
+
+
+		   if(run_t.ptc_warning==1){
+
+		     if(run_t.gTimer_ptc_adc_times > 2){
+			 	run_t.gTimer_ptc_adc_times=0;
+		   	    
+			   #if DEBUG
+				 printf("ptc_warning\n");
+
+				#endif 
+		         buzzer_sound();//Buzzer_KeySound();
+                HAL_Delay(200);
+		       buzzer_sound();//Buzzer_KeySound();
+		      HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   buzzer_sound();//Buzzer_KeySound();
+		       HAL_Delay(100);
+			   SendWifiCmd_To_Order(PTC_WARNING);
+		     }
+
+		   }
+		 
+	
+
+
+}

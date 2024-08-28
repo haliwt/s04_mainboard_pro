@@ -1,7 +1,7 @@
 #include "bsp.h"
 
 #define DECODER_BIT_0        (1<< 0)
-
+#define RUNMAIN_BIT_1        (1<< 1)
 
 /***********************************************************************************************************
 											函数声明
@@ -86,6 +86,9 @@ static void vTaskMsgPro(void *pvParameters)
 {
 	
     static uint8_t power_on_sound_flag ;
+    BaseType_t xResult;
+	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(10); /* 1.测试设定的-设置最大等待时间为50ms */
+    uint32_t ulValue;
     while(1)
     {
       
@@ -97,28 +100,38 @@ static void vTaskMsgPro(void *pvParameters)
         buzzer_sound();
 
     }
-    if(run_t.RunCommand_Label== POWER_ON){
+
+
+     xResult = xTaskNotifyWait(0x00000000,      
+						           0xFFFFFFFF,      
+						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
+						          xMaxBlockTime);  /* 最大允许延迟时间 */
+
+      if((ulValue & RUNMAIN_BIT_1 ) != 0)
+      {
+      
+//      }
+//      else{
+      
+      if(run_t.RunCommand_Label== POWER_ON){
         
+           mainboard_run_handler();
+          
+           Read_TempSensor_Data();
+           works_two_hours_detected_handler();
+           fan_detected_adc_fun();
+           error_detected_codes_handler();
 
-             
-             mainboard_run_handler();
-             Read_TempSensor_Data();
-            
+     }
+     else{
 
-             works_two_hours_detected_handler();
-
-     
-
-      }
-      else{
-
-             PowerOff_Run_Pro();
+         PowerOff_Run_Pro();
 
       }
 
     
-   
-     vTaskDelay(50);
+     }
+     //vTaskDelay(50);
      
     }
 
@@ -134,7 +147,7 @@ static void vTaskMsgPro(void *pvParameters)
 */
 static void vTaskStart(void *pvParameters)
 {
-    MSG_T *ptMsg;
+    
 	BaseType_t xResult;
 	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
@@ -161,10 +174,21 @@ static void vTaskStart(void *pvParameters)
            
               receive_data_fromm_display(gl_tMsg.usData);
             }
+
+            
+             
             
 
          }
-       	
+         else{
+
+             xTaskNotify(xHandleTaskMsgPro,  /* 目标任务 */
+             RUNMAIN_BIT_1,     /* 设置目标任务事件标志位bit0  */
+             eSetBits);  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
+
+
+         }
+       
       
 		
          
@@ -274,7 +298,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-        DISABLE_INT();
+      //  DISABLE_INT();
         switch(state)
 		{
 		case 0:  //#0
@@ -338,7 +362,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 			
 		}
-        ENABLE_INT();
+       // ENABLE_INT();
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		

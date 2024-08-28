@@ -244,6 +244,10 @@ void Decode_RunCmd(uint8_t cmdType_1, uint8_t cmdType_2);
 
 void works_two_hours_detected_handler(void);
 
+void fan_detected_adc_fun(void);
+
+void error_detected_codes_handler(void);
+
 #endif 
 
 
