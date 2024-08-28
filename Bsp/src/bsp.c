@@ -35,11 +35,7 @@ void receive_data_fromm_display(uint8_t *pdata)
            buzzer_sound();
            
            run_t.RunCommand_Label= POWER_ON;
-//           if(first_power_on ==0){
-//              first_power_on ++ ;
-//              Dht11_Read_TempHumidity_Handler(&DHT11);
-//              sendData_Real_TimeHum(run_t.gDht11_humidity ,run_t.gDht11_temperature);
-//	        }
+
 
         }
         else if(pdata[3] == 0x0){ //close 
@@ -53,10 +49,13 @@ void receive_data_fromm_display(uint8_t *pdata)
 
      case 0x02: //PTC打开关闭指令
 
-     if(pdata[3] == 0x01 && run_t.interval_time_stop_run==0){
+     if(pdata[3] == 0x01){
           buzzer_sound();
+
+       if(run_t.interval_time_stop_run==0){
           run_t.gDry = 1;
           PTC_SetHigh();
+        }
        }
        else if(pdata[3] == 0x0){
          buzzer_sound();
@@ -69,11 +68,13 @@ void receive_data_fromm_display(uint8_t *pdata)
 
      case 0x03: //PLASMA 打开关闭指令
 
-        if(pdata[3] == 0x01 &&  run_t.interval_time_stop_run==0){
+        if(pdata[3] == 0x01){
            
            buzzer_sound();
-           run_t.gPlasma = 1;
-           PLASMA_SetHigh(); //
+             if(run_t.interval_time_stop_run==0){
+               run_t.gPlasma = 1;
+               PLASMA_SetHigh(); //
+            }
         }
         else if(pdata[3] == 0x0){
           buzzer_sound();
@@ -89,10 +90,13 @@ void receive_data_fromm_display(uint8_t *pdata)
 
       case 0x04: //ultrasonic  打开关闭指令
 
-        if(pdata[3] == 0x01 && run_t.interval_time_stop_run==0 ){  //open 
+        if(pdata[3] == 0x01 ){  //open 
             buzzer_sound();
+           if(run_t.interval_time_stop_run==0){
            gpro_t.gmouse =1;
             HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic Off 
+
+            }
 
         }
         else if(pdata[3] == 0x0){ //close 
@@ -140,13 +144,16 @@ void receive_data_fromm_display(uint8_t *pdata)
 
          if(pdata[3] == 0x01){  //buzzer sound 
                  buzzer_sound();
-                 gpro_t.gai_modle_flag = 1; //???
-                 gpro_t.gmouse = 1;
-                 run_t.gPlasma = 1;
-                 gpro_t.gmouse =1;
-                 PTC_SetHigh();
-                 PLASMA_SetHigh(); //
-                 HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic Off 
+                 if(run_t.interval_time_stop_run==0){
+                     gpro_t.gai_modle_flag = 1; //???
+                     run_t.gDry = 1;
+                     gpro_t.gmouse = 1;
+                     run_t.gPlasma = 1;
+                   
+                     PTC_SetHigh();
+                     PLASMA_SetHigh(); //
+                     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic Off 
+                 }
      
             }
             else if(pdata[3] == 0x0){ // don't buzzer sound .

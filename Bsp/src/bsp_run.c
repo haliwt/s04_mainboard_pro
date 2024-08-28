@@ -399,8 +399,7 @@ void mainboard_run_handler(void)
             break;
 
 		    case 3:
-			
-				if(run_t.gTimer_fan_adc_times > 8 && run_t.interval_time_stop_run ==0){ //2 minute 180s
+			    if(run_t.gTimer_fan_adc_times > 8 && run_t.interval_time_stop_run ==0){ //2 minute 180s
 					run_t.gTimer_fan_adc_times =0;
 
 				 
@@ -408,7 +407,8 @@ void mainboard_run_handler(void)
 				
 	                
 
-				}
+			 }
+				
 	              run_t.run_masin_process_step=4;
 			break;
 			
@@ -518,8 +518,9 @@ static void Fan_ContinueRun_OneMinute_Fun(void)
 	if(run_t.gTimer_fan_run_one_minutes < 60){
 
 		Fan_CCW_Run_Max();
-	}       
-	else if(run_t.gTimer_fan_run_one_minutes > 59){
+	} 
+    
+	if(run_t.gTimer_fan_run_one_minutes > 59){
 
 		run_t.gTimer_fan_run_one_minutes=0;
 
@@ -577,6 +578,7 @@ void ActionEvent_Handler(void)
    if(run_t.gTime_run_board_action > 1  && run_t.interval_time_stop_run ==0){
 
       run_t.gTime_run_board_action =0;
+
 
    if(run_t.ptc_warning ==0){
 	if(run_t.gDry == 1){
