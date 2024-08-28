@@ -103,8 +103,9 @@ static void vTaskMsgPro(void *pvParameters)
      if(run_t.RunCommand_Label== POWER_ON){
         
 
-             Read_TempSensor_Data();
+             
              mainboard_run_handler();
+             Read_TempSensor_Data();
 
               works_two_hours_detected_handler();
 
@@ -119,7 +120,7 @@ static void vTaskMsgPro(void *pvParameters)
 
     
    
-     vTaskDelay(20);
+     vTaskDelay(200);
      
     }
 
@@ -137,7 +138,7 @@ static void vTaskStart(void *pvParameters)
 {
     MSG_T *ptMsg;
 	BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(200); /* 1.测试设定的-设置最大等待时间为50ms */
+	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(10); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
 
 	
@@ -196,7 +197,7 @@ void AppTaskCreate (void)
                  "vTaskMsgPro",   		/* 任务各1�7    */
                  128,             		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 2,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
@@ -204,7 +205,7 @@ void AppTaskCreate (void)
                  "vTaskStart",   		/* 任务各1�7    */
                  128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 
@@ -275,7 +276,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-       
+        DISABLE_INT();
         switch(state)
 		{
 		case 0:  //#0
@@ -339,7 +340,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 			
 		}
-        
+        ENABLE_INT();
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		

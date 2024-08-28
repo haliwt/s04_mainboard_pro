@@ -116,7 +116,7 @@ typedef struct _RUN_T{
 	uint8_t buzzer_sound_flag ;
   
     uint8_t decodeFlag;
-    uint8_t power_on_send_data_flag;
+
     uint8_t gTimer_usart_error_2;
 	uint8_t interval_time_stop_run;
     uint8_t power_off_flag;

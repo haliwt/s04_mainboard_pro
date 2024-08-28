@@ -288,7 +288,7 @@ void PowerOn_Run_Pro(void)
 		 run_t.ptc_warning =0;
 		 run_t.gTimer_ptc_adc_times=0;
 		 run_t.open_ptc_detected_flag=0;
-        run_t.power_on_send_data_flag=0;
+     
 
         run_t.gPower_On=POWER_ON;
     
@@ -310,7 +310,7 @@ void PowerOff_Run_Pro(void)
 
          power_on_flag=0;
 	     run_t.gPower_On = POWER_OFF;
-		 run_t.power_on_send_data_flag=0;
+
 	     run_t.gTimer_continuce_works_time=0;
 		 run_t.interval_time_stop_run=0;
 		 run_t.fan_warning =0;
@@ -374,7 +374,7 @@ void mainboard_run_handler(void)
             run_t.ptc_warning =0;
             run_t.gTimer_ptc_adc_times=0;
             run_t.open_ptc_detected_flag=0;
-            run_t.power_on_send_data_flag=0;
+
 
             run_t.gPower_On=POWER_ON;
 
@@ -623,11 +623,23 @@ void ActionEvent_Handler(void)
 
 void Read_TempSensor_Data(void)
 {
-  if((run_t.gTimer_read_dht11_temp_value>5 && run_t.gPower_On == POWER_ON)|| run_t.power_on_send_data_flag < 10){
+
+   static uint8_t dc_power_on_times;
+
+    if(run_t.gTimer_read_dht11_temp_value>0 && dc_power_on_times< 5){
        run_t.gTimer_read_dht11_temp_value=0;
-       run_t.power_on_send_data_flag ++;
+       dc_power_on_times++ ;
+   
         Update_DHT11_Value();
-        osDelay(50);
+        osDelay(10);
+        buzzer_sound();
+
+    }
+    else if(run_t.gTimer_read_dht11_temp_value>5){
+       run_t.gTimer_read_dht11_temp_value=0;
+   
+        Update_DHT11_Value();
+        osDelay(5);
         buzzer_sound();
 
     }
