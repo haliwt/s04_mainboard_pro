@@ -64,6 +64,7 @@ typedef struct _action_state{
 
   uint8_t gmouse;
   uint8_t disp_rx_cmd_done_flag ;
+  uint8_t gai_modle_flag ;
 
 
 

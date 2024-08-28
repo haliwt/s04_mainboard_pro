@@ -140,12 +140,19 @@ void receive_data_fromm_display(uint8_t *pdata)
 
          if(pdata[3] == 0x01){  //buzzer sound 
                  buzzer_sound();
-                 
+                 gpro_t.gai_modle_flag = 1; //???
+                 gpro_t.gmouse = 1;
+                 run_t.gPlasma = 1;
+                 gpro_t.gmouse =1;
+                 PTC_SetHigh();
+                 PLASMA_SetHigh(); //
+                 HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic Off 
      
             }
             else if(pdata[3] == 0x0){ // don't buzzer sound .
      
               buzzer_sound();
+              gpro_t.gai_modle_flag = 0;
      
             }
 
