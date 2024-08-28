@@ -1,5 +1,6 @@
 #include "bsp.h"
 
+#define DECODER_BIT_0        (1<< 0)
 
 
 /***********************************************************************************************************
@@ -12,7 +13,7 @@ static void AppTaskCreate (void);
 
 
 /* 创建任务通信机制 */
-static void AppObjCreate(void);
+//static void AppObjCreate(void);
 
 
 /***********************************************************************************************************
@@ -23,7 +24,7 @@ static TaskHandle_t xHandleTaskMsgPro = NULL;
 static TaskHandle_t xHandleTaskStart = NULL;
 
 //static QueueHandle_t xQueue1 = NULL;
-static QueueHandle_t xQueue2 = NULL;
+//static QueueHandle_t xQueue2 = NULL;
 //static QueueHandle_t xQueue3 = NULL;
 
 
@@ -38,17 +39,20 @@ static QueueHandle_t xQueue2 = NULL;
 typedef struct Msg
 {
 	uint8_t  ucMessageID;
-	uint8_t usData[1];
-	uint8_t ulData[1];
+	uint8_t usData[12];
+
 }MSG_T;
 
-MSG_T   g_tMsg; /* 定义丢�个结构体用于消息队列 */
+MSG_T   gl_tMsg; /* 定义丢�个结构体用于消息队列 */
 
-uint8_t decoder_flag;
+uint8_t ulid;
 
-uint8_t ulid,uldata,usdata;
+uint8_t rx_data_counter,rx_end_flag;
 
-//uint8_t test_counter;
+
+uint8_t bcc_check_code;
+
+uint8_t check_code;
 
 /**********************************************************************************************************
 *
@@ -63,7 +67,7 @@ void freeRTOS_Handler(void)
 	  AppTaskCreate();
 	  
 	  /* 创建任务通信机制 */
-	   AppObjCreate();
+	//   AppObjCreate();
 	  
 	  /* 启动调度，开始执行任劄1�7 */
 	   vTaskStartScheduler();
@@ -134,54 +138,40 @@ static void vTaskStart(void *pvParameters)
     MSG_T *ptMsg;
 	BaseType_t xResult;
 	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
+    uint32_t ulValue;
 
 	
     while(1)
     {
-		
-       xResult = xQueueReceive(xQueue2,                   /* 消息队列句柄 */
-		                        (void *)&ptMsg,  		   /* 这里获取的是结构体的地址 */
-		                        (TickType_t)xMaxBlockTime);/* 设置阻塞时间 */
-		
-		if(xResult == pdPASS){
+	    xResult = xTaskNotifyWait(0x00000000,      
+						           0xFFFFFFFF,      
+						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
+						          xMaxBlockTime);  /* 最大允许延迟时间 */
+
+         if((ulValue & DECODER_BIT_0 ) != 0)
+          {
+            gpro_t.disp_rx_cmd_done_flag = 0;
+
+           //  bcc_check_code =  gl_tMsg.usData[7];
+
+            check_code =  bcc_check(gl_tMsg.usData,ulid);
+
+           
+
+           if(check_code == bcc_check_code ){
+           
+              receive_data_fromm_display(gl_tMsg.usData);
+            }
             
 
-          usdata = ptMsg->usData[0];
-
-          uldata = ptMsg->ulData[0];
-          
-
-          if(usdata ==0x90 || usdata ==0x91){
-            
-             if(uldata == 0x43){
-                 // buzzer_sound();//Buzzer_KeySound();
-              }
-           }
-           else{
-              buzzer_sound();//Buzzer_KeySound();
-
-
-           }
-          Decode_RunCmd(uldata,usdata);
-       
-         /* 成功接收，  并通过串口将数据打印出来 */
-			
-		    //printf("ptMsg->ucMessageID = %d\r\n",ptMsg->ucMessageID);
-            ///printf("ptMsg->usData[0] = %d\r\n",ptMsg->usData[0]);
-            //printf("ptMsg->ulData[0] = %d\r\n",ptMsg->ulData[0]);
-      
-          #if 0
-          
-            HAL_UART_Transmit(&huart2, &uldata, 1, 0xffff);
-            
-            HAL_UART_Transmit(&huart2, &space_key, 1, 0xffff);
-            HAL_UART_Transmit(&huart2, &usdata, 1, 0xffff);
-          #endif 
-		
          }
+       	
+      
+		
+         
        
 		
-      }
+    }
 }
 
 /*
@@ -230,7 +220,7 @@ void AppTaskCreate (void)
 */
 void AppObjCreate (void)
 {
-    #if 1
+    #if 0
 
 //   /* 创建10个uint8_t型消息队刄1�7 */
 //	xQueue1 = xQueueCreate(4, sizeof(uint8_t));
@@ -285,70 +275,71 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-       DISABLE_INT();
-		switch(state)
+       
+        switch(state)
 		{
 		case 0:  //#0
-			if(inputBuf[0] == 'T')  //hex :54 - "T" -fixed
+			if(inputBuf[0] == 0xA5){  // 0xA5 --didplay command head
+               rx_data_counter=0;
+               gl_tMsg.usData[rx_data_counter] = inputBuf[0];
 				state=1; //=1
+
+             }
             else
                 state=0;
 		break;
+
+       
 		case 1: //#1
-             if(inputBuf[0] == 'K'){//hex :4B - "K" -fixed
-               
-				state=2; //=1
 
-             }
-			else{
-			   state =0;
-			}
-			break;
-            
-        case 2:
-			 if(inputBuf[0] == 'P' || inputBuf[0] == 'C' ||inputBuf[0] == 'Z' || inputBuf[0]=='T'){
-			    inputCmd[0]= inputBuf[0];
-               
-                // ptMsg->ulData[0] = inputBuf[0];
-				 state =3;
-
-			 }
-			 else
-                 state =0;
-        
-        break;
-        
-        case 3:
-
+            if(gpro_t.disp_rx_cmd_done_flag ==0){
               /* 初始化结构体指针 */
-              ptMsg = &g_tMsg;
-		  
-	        inputCmd[1]= inputBuf[0];
+               rx_data_counter++;
+		     
+	          gl_tMsg.usData[rx_data_counter] = inputBuf[0];
+              
 
-            ptMsg->ulData[0] = inputCmd[0];
-            ptMsg ->usData[0] =  inputCmd[1];
-           
-           
+              if(rx_end_flag == 1){
 
-             /* 向消息队列发数据 */
-        	xQueueSendFromISR(xQueue2,
-        				      (void *)&ptMsg,
-        				      &xHigherPriorityTaskWoken);
+                state = 0;
+            
+                ulid = rx_data_counter;
+                rx_end_flag=0;
 
-        	/* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
-        	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-	       
-		 
-			 
-	         state = 0;
-        
+                rx_data_counter =0;
+
+                gpro_t.disp_rx_cmd_done_flag = 1 ;
+
+
+                bcc_check_code=inputBuf[0];
+
+               
+
+                xTaskNotifyFromISR(xHandleTaskStart,  /* 目标任务 */
+                DECODER_BIT_0,     /* 设置目标任务事件标志位bit0  */
+                eSetBits,  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
+                &xHigherPriorityTaskWoken);
+
+                /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
+                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                  
+              }
+
+              }
+
+              if(gl_tMsg.usData[rx_data_counter] ==0xFE && rx_end_flag == 0 &&  rx_data_counter > 4){
+                     
+                          rx_end_flag = 1 ;
+                          
+                        
+               }
+
         break;
 
-	
+
 			
 		}
-
-        ENABLE_INT();
+        
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		

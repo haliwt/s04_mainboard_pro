@@ -74,38 +74,7 @@ void USART1_Cmd_Error_Handler(UART_HandleTypeDef *huart)
 //	  }
 //         
 //}
-/********************************************************************************
-	**
-	*Function Name:sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
-	*Function :
-	*Input Ref: humidity value and temperature value
-	*Return Ref:NO
-	*
-*******************************************************************************/
-void sendData_Reference_Data(uint8_t dry,uint8_t kill,uint8_t mouse)
-{
 
-	//crc=0x55;
-	outputBuf[0]='M'; //master
-	outputBuf[1]='A'; //41
-	outputBuf[2]='R'; //
-	outputBuf[3]=dry; //	
-	outputBuf[4]=kill; // // one command parameter
-	outputBuf[5]=mouse;
-	
-	//for(i=3;i<6;i++) crc ^= outputBuf[i];
-	//outputBuf[i]=crc;
-	transferSize=6;
-	if(transferSize)
-	{
-		while(transOngoingFlag); //UART interrupt transmit flag ,disable one more send data.
-		transOngoingFlag=1;
-		HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
-	}
-
-
-
-}
 /********************************************************************************
 	**
 	*Function Name:sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
@@ -117,39 +86,45 @@ void sendData_Reference_Data(uint8_t dry,uint8_t kill,uint8_t mouse)
 void sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
 {
 
-	//crc=0x55;
-	outputBuf[0]='M'; //master
-	outputBuf[1]='A'; //41
-	outputBuf[2]='D'; //44	// 'D' data
-	outputBuf[3]=hum; //	// 'R' rotator motor for select filter
-	outputBuf[4]=temp; // // one command parameter
-	
-	//for(i=3;i<6;i++) crc ^= outputBuf[i];
-	//outputBuf[i]=crc;
-	transferSize=5;
-	if(transferSize)
-	{
-		while(transOngoingFlag); //UART interrupt transmit flag ,disable one more send data.
-		transOngoingFlag=1;
-		HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
-	}
+	outputBuf[0]=0x5A; //main board head = 0xA5
+	outputBuf[1]=0x10; //display device Number:is 0x01
+	outputBuf[2]=0x1A; // command type = 0x1A -> temperature of value 
+	outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
+	outputBuf[4]=0x02; // data is length: 00 ->don't data 
+	outputBuf[5]=hum; // frame of end code -> 0xFE.
+	outputBuf[6]=temp; // frame of end code -> 0xFE.
+	outputBuf[7]=0xFE; // frame of end code -> 0xFE.
+    outputBuf[8] = bcc_check(outputBuf,8);
+		
+		transferSize=9;
+		if(transferSize)
+		{
+			while(transOngoingFlag);
+			transOngoingFlag=1;
+			HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
+		}
 
 
 
 }
-void SendWifiData_To_PanelTime(uint8_t dat1)
+void SendWifiData_To_OnlyTemp(uint8_t temp)
 {
    
 	
-		outputBuf[0]='M'; //4D
-		outputBuf[1]='A'; //41
-		outputBuf[2]='T'; //44	// 'T' time
-		outputBuf[3]=dat1; //	
+	outputBuf[0]=0x5A; //main board head = 0xA5
+	outputBuf[1]=0x10; //display device Number:is 0x01
+	outputBuf[2]=0x1A; // command type = 0x1A -> temperature of value 
+	outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
+	outputBuf[4]=0x01; // data is length: 00 ->don't data 
+	outputBuf[5]=temp; // frame of end code -> 0xFE.
+	
+	outputBuf[6]=0xFE; // frame of end code -> 0xFE.
+    outputBuf[7] = bcc_check(outputBuf,7);
 		
-		transferSize=4;
+		transferSize=8;
 		if(transferSize)
 		{
-			while(transOngoingFlag); //UART interrupt transmit flag ,disable one more send data.
+			while(transOngoingFlag);
 			transOngoingFlag=1;
 			HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
 		}
@@ -165,25 +140,25 @@ void SendWifiData_To_PanelTime(uint8_t dat1)
 *Return Ref:NO
 *
 *******************************************************************************/
-void SendWifiData_To_PanelTemp(uint8_t dat1)
+void SendWifiData_To_OnlyHumidity(uint8_t hum)
 {
    
-	//crc=0x55;
-		outputBuf[0]='M'; //4D
-		outputBuf[1]='A'; //41
-		outputBuf[2]='P'; // 'T' time
-		outputBuf[3]=dat1; //	
-	
-		
-		//for(i=3;i<6;i++) crc ^= outputBuf[i];
-		//outputBuf[i]=crc;
-		transferSize=4;
-		if(transferSize)
-		{
-			while(transOngoingFlag); //UART interrupt transmit flag ,disable one more send data.
-			transOngoingFlag=1;
-			HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
-		}
+        outputBuf[0]=0x5A; //main board head = 0xA5
+        outputBuf[1]=0x10; //display device Number:is 0x01
+        outputBuf[2]=0x1B; // command type = 0x1A -> temperature of value 
+        outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
+        outputBuf[4]=0x02; // data is length: 00 ->don't data 
+        outputBuf[5]=hum; // frame of end code -> 0xFE.
+        outputBuf[6]=0xFE; // frame of end code -> 0xFE.
+        outputBuf[7] = bcc_check(outputBuf,7);
+            
+            transferSize=8;
+            if(transferSize)
+            {
+                while(transOngoingFlag);
+                transOngoingFlag=1;
+                HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
+            }
 
 }
 

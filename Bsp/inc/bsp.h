@@ -63,6 +63,8 @@ typedef struct _action_state{
 
 
   uint8_t gmouse;
+  uint8_t disp_rx_cmd_done_flag ;
+
 
 
 
@@ -75,8 +77,10 @@ void bsp_Init(void);
 
 
 
+void receive_data_fromm_display(uint8_t *pdata);
 
 
+uint8_t bcc_check(const unsigned char *data, int len) ;
 
 
 
