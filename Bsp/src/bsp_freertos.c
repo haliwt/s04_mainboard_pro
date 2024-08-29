@@ -180,13 +180,7 @@ static void vTaskStart(void *pvParameters)
 
          
 
-            if(power_on_sound_flag == 0){
-            power_on_sound_flag ++;
-
-      
-            buzzer_sound();
-
-            }
+           
 
             if(run_t.RunCommand_Label== POWER_ON){
 
@@ -199,6 +193,13 @@ static void vTaskStart(void *pvParameters)
 
             }
             else{
+
+            if(power_on_sound_flag == 0){
+               power_on_sound_flag ++;
+
+              buzzer_sound();
+
+            }
 
             PowerOff_Run_Pro();
             Fan_ContinueRun_OneMinute_Fun();

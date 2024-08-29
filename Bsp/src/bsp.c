@@ -2,8 +2,8 @@
 
 void bsp_Init(void)
 {
-
-buzzer_init();
+ run_t.RunCommand_Label= POWER_OFF;
+ buzzer_init();
 
 }
 
@@ -20,7 +20,7 @@ void receive_data_fromm_display(uint8_t *pdata)
 
   // static uint8_t first_power_on ;
 
-   if(pdata[1] == 0x01){
+   if(pdata[1] == 0x01){ //
 
     switch(pdata[2]){
 
@@ -66,6 +66,26 @@ void receive_data_fromm_display(uint8_t *pdata)
        }
 
      break;
+
+     case 0x20: //PTC open or close command ,but no buzzer sound .
+
+      
+      if(pdata[3] == 0x01){ //no buzzer sound 
+               
+            if(run_t.interval_time_stop_run==0){
+               run_t.gDry = 1;
+               PTC_SetHigh();
+             }
+       }
+       else if(pdata[3] == 0x0){
+            
+              run_t.gDry =0;
+              PTC_SetLow();
+      
+       }
+
+
+      break;
 
      case 0x03: //PLASMA 打开关闭指令
 
@@ -204,6 +224,8 @@ void receive_data_fromm_display(uint8_t *pdata)
 
         }
       break;
+
+    
      
      }
 
