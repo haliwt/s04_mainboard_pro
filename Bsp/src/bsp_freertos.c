@@ -94,9 +94,6 @@ static void vTaskMsgPro(void *pvParameters)
       
     if(power_on_sound_flag == 0){
         power_on_sound_flag ++;
-
-       //Buzzer_KeySound(void);
-        run_t.power_off_flag = 0xff;
         buzzer_sound();
 
     }
@@ -164,7 +161,6 @@ static void vTaskStart(void *pvParameters)
           {
             gpro_t.disp_rx_cmd_done_flag = 0;
 
-           //  bcc_check_code =  gl_tMsg.usData[7];
 
             check_code =  bcc_check(gl_tMsg.usData,ulid);
 
@@ -182,15 +178,12 @@ static void vTaskStart(void *pvParameters)
          }
          else{
 
-            //             xTaskNotify(xHandleTaskMsgPro,  /* 目标任务 */
-            //             RUNMAIN_BIT_1,     /* 设置目标任务事件标志位bit0  */
-            //             eSetBits);  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
+         
 
             if(power_on_sound_flag == 0){
             power_on_sound_flag ++;
 
-            //Buzzer_KeySound(void);
-            run_t.power_off_flag = 0xff;
+      
             buzzer_sound();
 
             }
@@ -208,6 +201,7 @@ static void vTaskStart(void *pvParameters)
             else{
 
             PowerOff_Run_Pro();
+            Fan_ContinueRun_OneMinute_Fun();
 
             }
 

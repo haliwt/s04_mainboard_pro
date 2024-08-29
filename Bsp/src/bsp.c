@@ -35,6 +35,7 @@ void receive_data_fromm_display(uint8_t *pdata)
            buzzer_sound();
            
            run_t.RunCommand_Label= POWER_ON;
+           run_t.run_masin_process_step =0;
 
 
         }

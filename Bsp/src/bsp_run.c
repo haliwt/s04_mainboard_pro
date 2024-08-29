@@ -7,7 +7,7 @@ action_state gpro_t;
 
 //static void Single_Power_ReceiveCmd(uint8_t cmd);
 static void Single_Command_ReceiveCmd(uint8_t cmd); 
-static void Fan_ContinueRun_OneMinute_Fun(void);
+//static void Fan_ContinueRun_OneMinute_Fun(void);
 
 static void Works_Rest_Cycle_TenMinutes(void);
 
@@ -18,8 +18,7 @@ volatile uint8_t run_state =0;
 
 
 
-uint8_t power_on_flag;
-uint8_t power_off_fan;
+
 
 
 
@@ -111,7 +110,7 @@ void Single_Power_ReceiveCmd(uint8_t cmd)
 		 // printf("pon\n");
          run_t.RunCommand_Label= POWER_ON;
          run_t.run_masin_process_step =0;
-         run_t.power_off_flag =0;
+         run_t.power_off_flag =1;
       //  Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_ON);
       
      cmd=0xff;  
@@ -270,87 +269,40 @@ void SystemReset(void)
 	*Return Ref: NO
 	*
 **********************************************************************/
-void PowerOn_Run_Pro(void)
-{
-
-  
-   if(power_on_flag ==0){
-       power_on_flag ++;
-     
-   
-	 
-	 
-        run_t.gPower_On = POWER_ON;
-		run_t.gTimer_read_dht11_temp_value=20;
-		run_t.gTimer_continuce_works_time=0;
-		run_t.interval_time_stop_run=0;
-		 run_t.fan_warning =0;
-		 run_t.ptc_warning =0;
-		 run_t.gTimer_ptc_adc_times=0;
-		 run_t.open_ptc_detected_flag=0;
-     
-
-        run_t.gPower_On=POWER_ON;
-    
-     	SetPowerOn_ForDoing();
-     	
-	
-        }
-    
-}
 
 
+/**********************************************************
+    *
+    *Function Name: void PowerOff_Run_Pro(void)
+    *Function :
+    *Input Ref:
+    *Return Ref:
+    *
+**********************************************************/
 void PowerOff_Run_Pro(void)
 {
 
       
-       switch(run_t.power_off_flag){
+     if(run_t.power_off_flag == 1){
 
-       case 0:
-
-         power_on_flag=0;
-	     run_t.gPower_On = POWER_OFF;
+        run_t.gPower_On = POWER_OFF;
 
 	     run_t.gTimer_continuce_works_time=0;
 		 run_t.interval_time_stop_run=0;
 		 run_t.fan_warning =0;
 		 run_t.ptc_warning =0;
-
-     
-		if(power_off_fan==0){
-             
-		    power_off_fan++;
-			run_t.gTimer_fan_run_one_minutes =0;
-		    run_t.gFan_continueRun =0;
-
-
-		}
-		else{
-			run_t.gTimer_fan_run_one_minutes =0;
-			run_t.gFan_continueRun =1;
-		}
-	
-	   power_off_fan =1;
-	   run_t.power_off_flag= FAN_CONTINUCE_RUN_ONE_MINUTE;
-	 break;
-
-
-     case  FAN_CONTINUCE_RUN_ONE_MINUTE: //7
-
-	    if(power_off_fan==1){
-              power_off_fan++;
-		   SetPowerOff_ForDoing();
+         run_t.gTimer_fan_run_one_minutes =0;
+         run_t.gFan_continueRun =1;
+	    SetPowerOff_ForDoing();
          
-          //  Answering_Signal_USART1_Handler(COMMAND_ID,ANSWER_POWER_OFF);
-         }
-     
-		Fan_ContinueRun_OneMinute_Fun();
+        run_t.power_off_flag++ ;
+        
+     }
 
-	break;
+}
 
- }
 
-}	
+
 
 /**********************************************************************************
 *
@@ -367,6 +319,7 @@ void mainboard_run_handler(void)
 		   case 0:
 
             run_t.gPower_On = POWER_ON;
+            run_t.power_off_flag = 1;
             run_t.gTimer_read_dht11_temp_value=20;
             run_t.gTimer_continuce_works_time=0;
             run_t.interval_time_stop_run=0;
@@ -448,10 +401,10 @@ static void Works_Rest_Cycle_TenMinutes(void)
 }
 /**********************************************************
 ************************************************************/
-static void Fan_ContinueRun_OneMinute_Fun(void)
+void Fan_ContinueRun_OneMinute_Fun(void)
 {
 
-	if(run_t.gFan_continueRun ==1 ){
+	if(run_t.gFan_continueRun ==1 && run_t.power_off_flag == 2){
 
 	if(run_t.gTimer_fan_run_one_minutes < 60){
 
@@ -566,20 +519,20 @@ void Read_TempSensor_Data(void)
 
    static uint8_t dc_power_on_times,sound_flag;
 
-    if(run_t.gTimer_read_dht11_temp_value>0 && dc_power_on_times< 5){
+    if(run_t.gTimer_read_dht11_temp_value>0 && dc_power_on_times< 10){
        run_t.gTimer_read_dht11_temp_value=0;
        dc_power_on_times++ ;
    
         Update_DHT11_Value();
         osDelay(20);
-        buzzer_sound();
+       
 
     }
     else if(run_t.gTimer_read_dht11_temp_value>5){
        run_t.gTimer_read_dht11_temp_value=0;
    
         Update_DHT11_Value();
-       // buzzer_sound();
+        //osDelay(20);
          sound_flag = 1;
 
     }

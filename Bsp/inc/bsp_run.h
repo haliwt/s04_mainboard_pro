@@ -234,7 +234,7 @@ void Single_Power_ReceiveCmd(uint8_t cmd);
 
 void Read_TempSensor_Data(void);
 
-void PowerOn_Run_Pro(void);
+
 
 
 void PowerOff_Run_Pro(void);
@@ -247,6 +247,9 @@ void works_two_hours_detected_handler(void);
 void fan_detected_adc_fun(void);
 
 void error_detected_codes_handler(void);
+
+void Fan_ContinueRun_OneMinute_Fun(void);
+
 
 #endif 
 
