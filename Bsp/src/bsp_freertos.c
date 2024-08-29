@@ -147,7 +147,7 @@ static void vTaskMsgPro(void *pvParameters)
 */
 static void vTaskStart(void *pvParameters)
 {
-    
+    static uint8_t power_on_sound_flag ;
 	BaseType_t xResult;
 	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
@@ -182,9 +182,34 @@ static void vTaskStart(void *pvParameters)
          }
          else{
 
-             xTaskNotify(xHandleTaskMsgPro,  /* 目标任务 */
-             RUNMAIN_BIT_1,     /* 设置目标任务事件标志位bit0  */
-             eSetBits);  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
+            //             xTaskNotify(xHandleTaskMsgPro,  /* 目标任务 */
+            //             RUNMAIN_BIT_1,     /* 设置目标任务事件标志位bit0  */
+            //             eSetBits);  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
+
+            if(power_on_sound_flag == 0){
+            power_on_sound_flag ++;
+
+            //Buzzer_KeySound(void);
+            run_t.power_off_flag = 0xff;
+            buzzer_sound();
+
+            }
+
+            if(run_t.RunCommand_Label== POWER_ON){
+
+            mainboard_run_handler();
+
+            Read_TempSensor_Data();
+            works_two_hours_detected_handler();
+            fan_detected_adc_fun();
+            error_detected_codes_handler();
+
+            }
+            else{
+
+            PowerOff_Run_Pro();
+
+            }
 
 
          }
@@ -215,19 +240,19 @@ void AppTaskCreate (void)
 //                 1,           		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
 //                 &xHandleTaskRunPro); /* 任务句柄  */
 	
-	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
-                 "vTaskMsgPro",   		/* 任务各1�7    */
-                 128,             		/* 任务栈大小，单位word，也就是4字节 */
-                 NULL,           		/* 任务参数  */
-                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
-                 &xHandleTaskMsgPro );  /* 任务句柄  */
+//	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
+//                 "vTaskMsgPro",   		/* 任务各1�7    */
+//                 128,             		/* 任务栈大小，单位word，也就是4字节 */
+//                 NULL,           		/* 任务参数  */
+//                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+//                 &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
 	xTaskCreate( vTaskStart,     		/* 任务函数  */
                  "vTaskStart",   		/* 任务各1�7    */
-                 128,            		/* 任务栈大小，单位word，也就是4字节 */
+                 256,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 

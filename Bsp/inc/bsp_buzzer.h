@@ -9,6 +9,7 @@ extern void(*buzzer_sound)(void);
 
 void buzzer_init(void);
 
+void Buzzer_KeySound(void);
 
 
 void BuzzerSound_Handler(void(*buzzer_sound_handler)(void));
