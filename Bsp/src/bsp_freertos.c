@@ -97,20 +97,7 @@ static void vTaskMsgPro(void *pvParameters)
         buzzer_sound();
 
     }
-
-
-     xResult = xTaskNotifyWait(0x00000000,      
-						           0xFFFFFFFF,      
-						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
-						          xMaxBlockTime);  /* 最大允许延迟时间 */
-
-      if((ulValue & RUNMAIN_BIT_1 ) != 0)
-      {
-      
-//      }
-//      else{
-      
-      if(run_t.RunCommand_Label== POWER_ON){
+    if(run_t.RunCommand_Label== POWER_ON){
         
            mainboard_run_handler();
           
@@ -122,31 +109,24 @@ static void vTaskMsgPro(void *pvParameters)
      }
      else{
 
-         PowerOff_Run_Pro();
-
-      }
-
+        PowerOff_Run_Pro();
+    }
+     vTaskDelay(20); //suspend of timing 
     
      }
-     //vTaskDelay(50);
-     
-    }
-
 }
-/*
-*********************************************************************************************************
-*	凄1�7 敄1�7 各1�7: vTaskStart
+/*********************************************************************************************************
+*	Function Name: vTaskStart
 *	功能说明: 启动任务，也就是朢�高优先级任务，这里用作按键扫描��1�7
 *	彄1�7    叄1�7: pvParameters 是在创建该任务时传��的形参
 *	迄1�7 囄1�7 倄1�7: 旄1�7
 *   伄1�7 兄1�7 纄1�7: 4  (数��越小优先级越低，这个跟uCOS相反)
-*********************************************************************************************************
-*/
+**********************************************************************************************************/
 static void vTaskStart(void *pvParameters)
 {
     static uint8_t power_on_sound_flag ;
 	BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
+	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(100); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
 
 	
@@ -155,76 +135,26 @@ static void vTaskStart(void *pvParameters)
 	    xResult = xTaskNotifyWait(0x00000000,      
 						           0xFFFFFFFF,      
 						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
-						          xMaxBlockTime);  /* 最大允许延迟时间 */
+						          xMaxBlockTime);  /* 最大允许延迟时间,等待时间 */
 
-         if((ulValue & DECODER_BIT_0 ) != 0)
-          {
+        if((ulValue & DECODER_BIT_0 ) != 0)
+        {
             gpro_t.disp_rx_cmd_done_flag = 0;
-
-
             check_code =  bcc_check(gl_tMsg.usData,ulid);
 
-           
-
-           if(check_code == bcc_check_code ){
+            if(check_code == bcc_check_code ){
            
               receive_data_fromm_display(gl_tMsg.usData);
             }
-
-            
-             
-            
-
-         }
-         else{
-
-         
-
-           
-
-            if(run_t.RunCommand_Label== POWER_ON){
-
-            mainboard_run_handler();
-
-            Read_TempSensor_Data();
-            works_two_hours_detected_handler();
-            fan_detected_adc_fun();
-            error_detected_codes_handler();
-
-            }
-            else{
-
-            if(power_on_sound_flag == 0){
-               power_on_sound_flag ++;
-
-              buzzer_sound();
-
-            }
-
-            PowerOff_Run_Pro();
-            Fan_ContinueRun_OneMinute_Fun();
-
-            }
-
-
-         }
-       
-      
-		
-         
-       
-		
+        }
     }
 }
-
-/*
-*********************************************************************************************************
+/********************************************************************************************************
 *	凄1�7 敄1�7 各1�7: AppTaskCreate
 *	功能说明: 创建应用任务
 *	彄1�7    参：旄1�7
 *	迄1�7 囄1�7 倄1�7: 旄1�7
-*********************************************************************************************************
-*/
+**********************************************************************************************************/
 void AppTaskCreate (void)
 {
 
@@ -235,72 +165,21 @@ void AppTaskCreate (void)
 //                 1,           		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
 //                 &xHandleTaskRunPro); /* 任务句柄  */
 	
-//	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
-//                 "vTaskMsgPro",   		/* 任务各1�7    */
-//                 128,             		/* 任务栈大小，单位word，也就是4字节 */
-//                 NULL,           		/* 任务参数  */
-//                 1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
-//                 &xHandleTaskMsgPro );  /* 任务句柄  */
+	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
+                "vTaskMsgPro",   		/* 任务各1�7    */
+                128,             		/* 任务栈大小，单位word，也就是4字节 */
+                NULL,           		/* 任务参数  */
+                1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
 	xTaskCreate( vTaskStart,     		/* 任务函数  */
                  "vTaskStart",   		/* 任务各1�7    */
-                 256,            		/* 任务栈大小，单位word，也就是4字节 */
+                 128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
-
-
-
-/*
-*********************************************************************************************************
-*	凄1�7 敄1�7 各1�7: AppObjCreate
-*	功能说明: 创建任务通信机制
-*	彄1�7    叄1�7: 旄1�7
-*	迄1�7 囄1�7 倄1�7: 旄1�7
-*********************************************************************************************************
-*/
-void AppObjCreate (void)
-{
-    #if 0
-
-//   /* 创建10个uint8_t型消息队刄1�7 */
-//	xQueue1 = xQueueCreate(4, sizeof(uint8_t));
-//    if( xQueue1 == 0 )
-//    {
-//        /* 没有创建成功，用户可以在这里加入创建失败的处理机刄1�7 */
-//    }
-	
-	/* 创建10个存储指针变量的消息队列，由于CM3/CM4内核昄1�732位机，一个指针变量占甄1�74个字芄1�7 */
-	xQueue2 = xQueueCreate(10, sizeof(struct Msg *));
-    if( xQueue2 == 0 )
-    {
-        /* 没有创建成功，用户可以在这里加入创建失败的处理机刄1�7 */
-    }
-
-	
-
-	#endif 
-
-    #if 0
-
-	 /* 创建队列雄1�7 */
-    xQueueSet = xQueueCreateSet(QUEUESET_LENGTH);
-    /* 创建队列*/
-    xQueue1 = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
-    xQueue2 = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
-	
-    /* 创建二��信号量 */
-    xSemaphore = xSemaphoreCreateBinary();
-	
-    /* 将队列和二��信号量添加到队列集丄1�7 */
-    xQueueAddToSet(xQueue1, xQueueSet);
-    xQueueAddToSet(xQueue2, xQueueSet);
-    xQueueAddToSet(xSemaphore, xQueueSet);
-    #endif 
-}
-
 
 /********************************************************************************
 	**
