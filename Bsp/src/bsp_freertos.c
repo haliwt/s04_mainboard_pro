@@ -86,9 +86,9 @@ static void vTaskMsgPro(void *pvParameters)
 {
 	
     static uint8_t power_on_sound_flag ;
-    BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(10); /* 1.测试设定的-设置最大等待时间为50ms */
-    uint32_t ulValue;
+ //   BaseType_t xResult;
+//	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(10); /* 1.测试设定的-设置最大等待时间为50ms */
+  //  uint32_t ulValue;
     while(1)
     {
       
@@ -111,9 +111,9 @@ static void vTaskMsgPro(void *pvParameters)
 
         PowerOff_Run_Pro();
     }
-     vTaskDelay(20); //suspend of timing 
+     vTaskDelay(30); //suspend of timing 
     
-     }
+    }
 }
 /*********************************************************************************************************
 *	Function Name: vTaskStart
@@ -124,7 +124,7 @@ static void vTaskMsgPro(void *pvParameters)
 **********************************************************************************************************/
 static void vTaskStart(void *pvParameters)
 {
-    static uint8_t power_on_sound_flag ;
+   
 	BaseType_t xResult;
 	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(30); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
@@ -132,10 +132,11 @@ static void vTaskStart(void *pvParameters)
 	
     while(1)
     {
-	    xResult = xTaskNotifyWait(0x00000000,      
+        #if 1
+        xResult = xTaskNotifyWait(0x00000000,      
 						           0xFFFFFFFF,      
 						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
-						          xMaxBlockTime);  /* 最大允许延迟时间,等待时间 */
+						          portMAX_DELAY);  /* 最大允许延迟时间,等待时间 */
 
         if((ulValue & DECODER_BIT_0 ) != 0)
         {
@@ -147,6 +148,22 @@ static void vTaskStart(void *pvParameters)
               receive_data_fromm_display(gl_tMsg.usData);
             }
         }
+        #endif 
+
+       #if 0
+        if(gpro_t.disp_rx_cmd_done_flag==1)
+        {
+            gpro_t.disp_rx_cmd_done_flag = 0;
+            check_code =  bcc_check(gl_tMsg.usData,ulid);
+
+            if(check_code == bcc_check_code ){
+           
+              receive_data_fromm_display(gl_tMsg.usData);
+            }
+        }
+
+        vTaskDelay(10);
+        #endif 
     }
 }
 /********************************************************************************************************
@@ -167,9 +184,9 @@ void AppTaskCreate (void)
 	
 	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
                 "vTaskMsgPro",   		/* 任务各1�7    */
-                256,             		/* 任务栈大小，单位word，也就是4字节 */
+                128,             		/* 任务栈大小，单位word，也就是4字节 */
                 NULL,           		/* 任务参数  */
-                1,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                2,               		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                 &xHandleTaskMsgPro );  /* 任务句柄  */
 	
 	
@@ -177,7 +194,7 @@ void AppTaskCreate (void)
                  "vTaskStart",   		/* 任务各1�7    */
                  128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 
@@ -197,7 +214,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-      //  DISABLE_INT();
+        DISABLE_INT();
         switch(state)
 		{
 		case 0:  //#0
@@ -236,7 +253,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
                 bcc_check_code=inputBuf[0];
 
                
-
+                #if 1
                 xTaskNotifyFromISR(xHandleTaskStart,  /* 目标任务 */
                 DECODER_BIT_0,     /* 设置目标任务事件标志位bit0  */
                 eSetBits,  /* 将目标任务的事件标志位与BIT_0进行或操作， 将结果赋值给事件标志位 */
@@ -244,6 +261,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
                 /* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
                 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                #endif 
                   
               }
 
@@ -261,7 +279,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 			
 		}
-       // ENABLE_INT();
+        ENABLE_INT();
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		

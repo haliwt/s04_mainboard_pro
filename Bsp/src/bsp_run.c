@@ -532,7 +532,7 @@ void Read_TempSensor_Data(void)
        run_t.gTimer_read_dht11_temp_value=0;
    
         Update_DHT11_Value();
-        //osDelay(20);
+        osDelay(30);
          sound_flag = 1;
 
     }
