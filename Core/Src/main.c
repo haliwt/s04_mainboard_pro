@@ -9,7 +9,7 @@
   * S04 main board of with freeRTOS of with freeRTOS 
   * Version:1.0  DATA.2024.06.27
   * display "mouse" symbole 
-  * 
+  * modify sensor dht11 of driver codes .DATA.2024.09.06
   *
   *
   ******************************************************************************

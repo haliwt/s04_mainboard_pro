@@ -2,6 +2,8 @@
 
 void bsp_Init(void)
 {
+
+ dht11_init();
  run_t.RunCommand_Label= POWER_OFF;
  buzzer_init();
 

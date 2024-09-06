@@ -95,6 +95,7 @@ static void vTaskMsgPro(void *pvParameters)
     if(power_on_sound_flag == 0){
         power_on_sound_flag ++;
         buzzer_sound();
+       
 
     }
     if(run_t.RunCommand_Label== POWER_ON){
@@ -111,7 +112,9 @@ static void vTaskMsgPro(void *pvParameters)
 
         PowerOff_Run_Pro();
     }
-     vTaskDelay(100); //suspend of timing 
+
+     usart1_error_clear_fun(&huart1);
+     vTaskDelay(40); //suspend of timing 
     
     }
 }
@@ -137,16 +140,19 @@ static void vTaskStart(void *pvParameters)
 						           0xFFFFFFFF,      
 						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
 						          portMAX_DELAY);  /* 最大允许延迟时间,等待时间 portMAX_DELAY*/
+       if(xResult ==pdPASS){
 
-        if((ulValue & DECODER_BIT_0 ) != 0)
-        {
+            // if (notify_val & EVENTBIT_0) 
             gpro_t.disp_rx_cmd_done_flag = 0;
             check_code =  bcc_check(gl_tMsg.usData,ulid);
 
             if(check_code == bcc_check_code ){
            
-              receive_data_fromm_display(gl_tMsg.usData);
+             receive_data_fromm_display(gl_tMsg.usData);
             }
+            
+        
+
         }
         #endif 
 

@@ -2,9 +2,8 @@
 #define __INTERRUPT_MANAGER_H_
 #include "main.h"
 
-void USART2_Receive_Interrupt_Data(void);
 
-void USART2_WIFI_Receive_Data(void);
+void usart1_error_clear_fun(UART_HandleTypeDef *huart);
 
 
 #endif 

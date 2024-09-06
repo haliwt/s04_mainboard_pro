@@ -2,31 +2,28 @@
 
 
 
-//void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-//{
-//   uint32_t temp;
-//
-//    if(huart->Instance==USART1){
-//	
-//		if(__HAL_UART_GET_FLAG(&huart1,UART_FLAG_ORE)!=RESET){
-//
-//		__HAL_UART_CLEAR_OREFLAG(&huart1);
-//		UART_Start_Receive_IT(&huart1,inputBuf,1);
-//
-//		}
-//		__HAL_UNLOCK(&huart1);
-//        __HAL_UART_CLEAR_OREFLAG(&huart1);
-//		  
-//		temp = USART1->RDR;
-//		UART_Start_Receive_IT(&huart1,inputBuf,1);
-//	
-//		}
-//
-//
-//
-//
-//}
+void usart1_error_clear_fun(UART_HandleTypeDef *huart)
+{
+   uint32_t temp;
 
+
+   if(run_t.gTimer_usart1_rx_clear_data > 5){
+     run_t.gTimer_usart1_rx_clear_data=0;
+    if(huart->Instance==USART1){
+	
+		
+		
+        __HAL_UART_CLEAR_OREFLAG(&huart1);
+		  
+		temp = USART1->RDR;
+		UART_Start_Receive_IT(&huart1,inputBuf,1);
+	
+		}
+
+
+    }
+
+}
 
 /**
   * Function Name: void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -55,7 +52,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
      
          run_t.gTimer_fan_run_one_minutes++;
          run_t.gTime_run_board_action++;
-         
+         run_t.gTimer_usart1_rx_clear_data++;
          
         if(tm1> 59){ // 1 minute
 

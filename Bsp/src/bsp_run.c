@@ -318,6 +318,8 @@ void mainboard_run_handler(void)
 
 		   case 0:
 
+           
+
             run_t.gPower_On = POWER_ON;
             run_t.power_off_flag = 1;
             run_t.gTimer_read_dht11_temp_value=20;
@@ -327,9 +329,10 @@ void mainboard_run_handler(void)
             run_t.ptc_warning =0;
             run_t.gTimer_ptc_adc_times=0;
             run_t.open_ptc_detected_flag=0;
+            Update_DHT11_Value();
 
 
-            run_t.gPower_On=POWER_ON;
+     
 
             SetPowerOn_ForDoing();
      	

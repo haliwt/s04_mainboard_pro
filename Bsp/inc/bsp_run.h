@@ -190,6 +190,7 @@ typedef struct _RUN_T{
     uint8_t  gTime_run_board_action ;
 
 	uint8_t gTimer_continuce_works_time;
+    uint8_t gTimer_usart1_rx_clear_data;
 	uint16_t fan_detect_voltage; 
 	
 	uint16_t ptc_temp_voltage;
