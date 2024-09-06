@@ -111,7 +111,7 @@ static void vTaskMsgPro(void *pvParameters)
 
         PowerOff_Run_Pro();
     }
-     vTaskDelay(30); //suspend of timing 
+     vTaskDelay(100); //suspend of timing 
     
     }
 }
@@ -126,7 +126,7 @@ static void vTaskStart(void *pvParameters)
 {
    
 	BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
+	//const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
     uint32_t ulValue;
 
 	
@@ -136,7 +136,7 @@ static void vTaskStart(void *pvParameters)
         xResult = xTaskNotifyWait(0x00000000,      
 						           0xFFFFFFFF,      
 						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
-						          xMaxBlockTime);  /* 最大允许延迟时间,等待时间 portMAX_DELAY*/
+						          portMAX_DELAY);  /* 最大允许延迟时间,等待时间 portMAX_DELAY*/
 
         if((ulValue & DECODER_BIT_0 ) != 0)
         {
@@ -214,7 +214,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-        DISABLE_INT();
+       // DISABLE_INT(); //WT.EDIT 2024.09.06
         switch(state)
 		{
 		case 0:  //#0
@@ -279,7 +279,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 			
 		}
-        ENABLE_INT();
+      //  ENABLE_INT();
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		
