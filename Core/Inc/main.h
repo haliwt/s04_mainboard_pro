@@ -70,8 +70,13 @@ void Error_Handler(void);
 #define FAN_CMD_1_GPIO_Port GPIOA
 #define BEEP_PWM_Pin GPIO_PIN_1
 #define BEEP_PWM_GPIO_Port GPIOB
+
+//dht11 GPIO
 #define TEMP_SENSOR_Pin GPIO_PIN_13
 #define TEMP_SENSOR_GPIO_Port GPIOB
+
+
+//ultrasonic GPIO
 #define ULTR_PWM_Pin GPIO_PIN_8
 #define ULTR_PWM_GPIO_Port GPIOA
 
