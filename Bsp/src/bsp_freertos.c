@@ -114,7 +114,7 @@ static void vTaskMsgPro(void *pvParameters)
     }
 
      usart1_error_clear_fun(&huart1);
-     vTaskDelay(40); //suspend of timing 
+     vTaskDelay(30); //suspend of timing 
     
     }
 }

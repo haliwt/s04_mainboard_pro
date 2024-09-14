@@ -520,7 +520,7 @@ void ActionEvent_Handler(void)
 void Read_TempSensor_Data(void)
 {
 
-   static uint8_t dc_power_on_times,sound_flag;
+   static uint8_t dc_power_on_times;//sound_flag;
 
     if(run_t.gTimer_read_dht11_temp_value>0 && dc_power_on_times< 10){
        run_t.gTimer_read_dht11_temp_value=0;
@@ -536,16 +536,16 @@ void Read_TempSensor_Data(void)
    
         Update_DHT11_Value();
         osDelay(30);
-         sound_flag = 1;
+        //sound_flag = 1;
 
     }
 
-    if(sound_flag == 1){
+//    if(sound_flag == 1){
 
-      sound_flag ++ ;
-      Buzzer_KeySound();
+//      sound_flag ++ ;
+//      Buzzer_KeySound();
 
-    }
+//    }
 
 
 }
