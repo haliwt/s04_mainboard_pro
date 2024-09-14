@@ -57,28 +57,31 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ADC_FAN_Pin GPIO_PIN_0
-#define ADC_FAN_GPIO_Port GPIOA
-#define ADC_NTC_Pin GPIO_PIN_1
-#define ADC_NTC_GPIO_Port GPIOA
+#define ADC_FAN_Pin                             GPIO_PIN_0
+#define ADC_FAN_GPIO_Port                       GPIOA
+
+#define ADC_NTC_Pin                             GPIO_PIN_1
+#define ADC_NTC_GPIO_Port                       GPIOA
 
 
 
-#define FAN_CMD_2_Pin GPIO_PIN_6
-#define FAN_CMD_2_GPIO_Port GPIOA
-#define FAN_CMD_1_Pin GPIO_PIN_7
-#define FAN_CMD_1_GPIO_Port GPIOA
-#define BEEP_PWM_Pin GPIO_PIN_1
-#define BEEP_PWM_GPIO_Port GPIOB
+#define FAN_CMD_2_Pin                           GPIO_PIN_6
+#define FAN_CMD_2_GPIO_Port                     GPIOA
+
+#define FAN_CMD_1_Pin                           GPIO_PIN_7
+#define FAN_CMD_1_GPIO_Port                     GPIOA
+
+#define BEEP_PWM_Pin                            GPIO_PIN_1
+#define BEEP_PWM_GPIO_Port                      GPIOB
 
 //dht11 GPIO
-#define TEMP_SENSOR_Pin GPIO_PIN_13
-#define TEMP_SENSOR_GPIO_Port GPIOB
+#define TEMP_SENSOR_Pin                         GPIO_PIN_13
+#define TEMP_SENSOR_GPIO_Port                   GPIOB
 
 
 //ultrasonic GPIO
-#define ULTR_PWM_Pin GPIO_PIN_8
-#define ULTR_PWM_GPIO_Port GPIOA
+#define ULTR_PWM_Pin                            GPIO_PIN_8
+#define ULTR_PWM_GPIO_Port                      GPIOA
 
 
 #define PTC_PIN     GPIO_PIN_0
