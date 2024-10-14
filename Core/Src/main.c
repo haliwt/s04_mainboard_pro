@@ -9,7 +9,7 @@
   * S04 main board of with freeRTOS of with freeRTOS 
   * Version:1.0  DATA.2024.06.27
   * display "mouse" symbole 
-  * 
+  * Version: 2.1 next mass .DATA.2024.10.14
   *
   *
   ******************************************************************************
@@ -106,7 +106,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim17);//HAL_TIM_Base_Start(&htim3);
   UART_Start_Receive_IT(&huart1,inputBuf,1);
 
-    freeRTOS_Handler();
+  freeRTOS_Handler();
 
   /* USER CODE END 2 */
 

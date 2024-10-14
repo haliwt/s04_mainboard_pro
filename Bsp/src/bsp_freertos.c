@@ -12,7 +12,7 @@ static void AppTaskCreate (void);
 
 
 /* 创建任务通信机制 */
-static void AppObjCreate(void);
+//static void AppObjCreate(void);
 
 
 /***********************************************************************************************************
@@ -23,7 +23,7 @@ static TaskHandle_t xHandleTaskMsgPro = NULL;
 static TaskHandle_t xHandleTaskStart = NULL;
 
 //static QueueHandle_t xQueue1 = NULL;
-static QueueHandle_t xQueue2 = NULL;
+//static QueueHandle_t xQueue2 = NULL;
 //static QueueHandle_t xQueue3 = NULL;
 
 
@@ -63,7 +63,7 @@ void freeRTOS_Handler(void)
 	  AppTaskCreate();
 	  
 	  /* 创建任务通信机制 */
-	   AppObjCreate();
+	 //  AppObjCreate();
 	  
 	  /* 启动调度，开始执行任劄1�7 */
 	   vTaskStartScheduler();
@@ -117,7 +117,7 @@ static void vTaskMsgPro(void *pvParameters)
 
     
    
-     vTaskDelay(100);
+     vTaskDelay(200);
      
     }
 
@@ -133,24 +133,20 @@ static void vTaskMsgPro(void *pvParameters)
 */
 static void vTaskStart(void *pvParameters)
 {
-    MSG_T *ptMsg;
-	BaseType_t xResult;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
+  //  MSG_T *ptMsg;
+///	BaseType_t xResult;
+//	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(20); /* 1.测试设定的-设置最大等待时间为50ms */
 
 	
     while(1)
     {
 		
-       xResult = xQueueReceive(xQueue2,                   /* 消息队列句柄 */
-		                        (void *)&ptMsg,  		   /* 这里获取的是结构体的地址 */
-		                        (TickType_t)xMaxBlockTime);/* 设置阻塞时间 */
-		
-		if(xResult == pdPASS){
-            
+      
+       if(g_tMsg.ucMessageID==1){
+           g_tMsg.ucMessageID=0;
+          usdata = g_tMsg.usData[0];
 
-          usdata = ptMsg->usData[0];
-
-          uldata = ptMsg->ulData[0];
+          uldata = g_tMsg.ulData[0];
           
 
           if(usdata ==0x90 || usdata ==0x91){
@@ -166,21 +162,8 @@ static void vTaskStart(void *pvParameters)
            }
           Decode_RunCmd(uldata,usdata);
        
-         /* 成功接收，  并通过串口将数据打印出来 */
-			
-		    //printf("ptMsg->ucMessageID = %d\r\n",ptMsg->ucMessageID);
-            ///printf("ptMsg->usData[0] = %d\r\n",ptMsg->usData[0]);
-            //printf("ptMsg->ulData[0] = %d\r\n",ptMsg->ulData[0]);
-      
-          #if 0
-          
-            HAL_UART_Transmit(&huart2, &uldata, 1, 0xffff);
-            
-            HAL_UART_Transmit(&huart2, &space_key, 1, 0xffff);
-            HAL_UART_Transmit(&huart2, &usdata, 1, 0xffff);
-          #endif 
-		
-         }
+        }
+		vTaskDelay(20);
        
 		
       }
@@ -230,45 +213,30 @@ void AppTaskCreate (void)
 *	迄1�7 囄1�7 倄1�7: 旄1�7
 *********************************************************************************************************
 */
-void AppObjCreate (void)
-{
-    #if 1
-
-//   /* 创建10个uint8_t型消息队刄1�7 */
-//	xQueue1 = xQueueCreate(4, sizeof(uint8_t));
-//    if( xQueue1 == 0 )
+//void AppObjCreate (void)
+//{
+//    #if 1
+//
+////   /* 创建10个uint8_t型消息队刄1�7 */
+////	xQueue1 = xQueueCreate(4, sizeof(uint8_t));
+////    if( xQueue1 == 0 )
+////    {
+////        /* 没有创建成功，用户可以在这里加入创建失败的处理机刄1�7 */
+////    }
+//	
+//	/* 创建10个存储指针变量的消息队列,一次性可以存储的最大项目数是 10个 */
+//	xQueue2 = xQueueCreate(10, sizeof(struct Msg *));
+//    if( xQueue2 == 0 )
 //    {
 //        /* 没有创建成功，用户可以在这里加入创建失败的处理机刄1�7 */
 //    }
-	
-	/* 创建10个存储指针变量的消息队列,一次性可以存储的最大项目数是 10个 */
-	xQueue2 = xQueueCreate(10, sizeof(struct Msg *));
-    if( xQueue2 == 0 )
-    {
-        /* 没有创建成功，用户可以在这里加入创建失败的处理机刄1�7 */
-    }
-
-	
-
-	#endif 
-
-    #if 0
-
-	 /* 创建队列雄1�7 */
-    xQueueSet = xQueueCreateSet(QUEUESET_LENGTH);
-    /* 创建队列*/
-    xQueue1 = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
-    xQueue2 = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
-	
-    /* 创建二��信号量 */
-    xSemaphore = xSemaphoreCreateBinary();
-	
-    /* 将队列和二��信号量添加到队列集丄1�7 */
-    xQueueAddToSet(xQueue1, xQueueSet);
-    xQueueAddToSet(xQueue2, xQueueSet);
-    xQueueAddToSet(xSemaphore, xQueueSet);
-    #endif 
-}
+//
+//	
+//
+//	#endif 
+//
+//   
+//}
 
 
 /********************************************************************************
@@ -282,12 +250,12 @@ void AppObjCreate (void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
      static uint8_t state;
-     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-     MSG_T *ptMsg;
+     //BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    // MSG_T *ptMsg;
 
 	if(huart->Instance==USART1)//if(huart==&huart1) // Motor Board receive data (filter)
 	{
-       DISABLE_INT();
+      // DISABLE_INT();
 		switch(state)
 		{
 		case 0:  //#0
@@ -322,6 +290,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         
         case 3:
 
+          // inputCmd[1]= inputBuf[0];
+
+           g_tMsg.ucMessageID = 1;
+           g_tMsg.ulData[0] = inputCmd[0];
+           g_tMsg.usData[0] = inputBuf[0];
+
+          #if 0
               /* 初始化结构体指针 */
               ptMsg = &g_tMsg;
 		  
@@ -340,7 +315,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         	/* 如果xHigherPriorityTaskWoken = pdTRUE，那么退出中断后切到当前最高优先级任务执行 */
         	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 	       
-		 
+		  #endif 
 			 
 	         state = 0;
         
@@ -350,7 +325,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			
 		}
 
-        ENABLE_INT();
+    //    ENABLE_INT();
 	    __HAL_UART_CLEAR_OREFLAG(&huart1);
 		HAL_UART_Receive_IT(&huart1,inputBuf,1);//UART receive data interrupt 1 byte
 		

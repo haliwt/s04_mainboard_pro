@@ -140,11 +140,13 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
     
 	switch(cmd){
 
-	   case DRY_ON_NO_BUZZER:
+	  case DRY_ON_NO_BUZZER:
 
 	  case DRY_ON:
          run_t.gDry = 1;
-         PTC_SetHigh();
+         if(run_t.interval_time_stop_run ==0){
+            PTC_SetHigh();
+         }
 
        break;
 
@@ -155,13 +157,12 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
             PTC_SetLow();
 	  break;
 
+      
+
        case PLASMA_ON:
        		run_t.gPlasma=1;
-          
+           
             PLASMA_SetHigh();
-		 
-	  
-	    
        break;
 
        case PLASM_ON_NO_BUZZER:
@@ -182,7 +183,8 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
 
        case PLASMA_OFF:
            run_t.gPlasma=0;
-		   PLASMA_SetLow();
+           PLASMA_SetLow();
+            
 	
 	   
        break;
@@ -190,7 +192,9 @@ static void Single_Command_ReceiveCmd(uint8_t cmd)
 
 	   case MOUSE_RUN : //this is fan_speed_max
 	   	  gpro_t.gmouse=mouse_run;
+          
           Ultrasonic_Pwm_Output();
+           
        
 	  break;
 
