@@ -82,7 +82,7 @@ void freeRTOS_Handler(void)
 **********************************************************************************************************/
 static void vTaskMsgPro(void *pvParameters)
 {
-	
+	//vTaskDelay(pdMS_TO_TICKS(5000)); // 假设经过 5 秒后，条件变化
     static uint8_t power_on_sound_flag ;
     while(1)
     {
@@ -117,7 +117,7 @@ static void vTaskMsgPro(void *pvParameters)
 
     
    
-     vTaskDelay(200);
+     vTaskDelay(200); 
      
     }
 
@@ -125,9 +125,9 @@ static void vTaskMsgPro(void *pvParameters)
 /*
 *********************************************************************************************************
 *	Function Name: vTaskStart
-*	功能说明: priority is 1
+*	Function: priority is 1
 *	Input Ref:: pvParameters 是在创建该任务时传��的形参
-*	Return Ref: 旄1�7
+*	Return Ref: 
 *   Priority Ref: 1  (数��越小优先级越低，这个跟uCOS相反)
 *********************************************************************************************************
 */
