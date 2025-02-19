@@ -17,10 +17,10 @@
 
 static void UartVarInit(void);
 
-static void InitHardUart(void);
+//static void InitHardUart(void);
 static void UartSend(UART_T *_pUart, uint8_t *_ucaBuf, uint16_t _usLen);
 static uint8_t UartGetChar(UART_T *_pUart, uint8_t *_pByte);
-static void UartIRQ(UART_T *_pUart);
+//static void UartIRQ(UART_T *_pUart);
 static void ConfigUartNVIC(void);
 
 void RS485_InitTXE(void);
@@ -444,6 +444,7 @@ static uint8_t UartGetChar(UART_T *_pUart, uint8_t *_pByte)
 *	返 回 值: 无
 *********************************************************************************************************
 */
+#if 0
 static void UartIRQ(UART_T *_pUart)
 {
 	#if 0
@@ -530,7 +531,7 @@ static void UartIRQ(UART_T *_pUart)
 	}
     #endif 
 }
-
+#endif 
 /*
 *********************************************************************************************************
 *	函 数 名: USART1_IRQHandler  USART2_IRQHandler USART3_IRQHandler UART4_IRQHandler UART5_IRQHandler

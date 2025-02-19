@@ -237,7 +237,7 @@ void Judge_PTC_Temperature_Value(void)
 	    PTC_SetLow(); //turn off
         run_t.ptc_too_heat_value =1;
 		run_t.ptc_warning =1;
-        SendWifiCmd_To_Order(PTC_WARNING);
+        SendWifiData_To_Cmd(0x08,0x01) ;       //SendWifiCmd_To_Order(PTC_WARNING);
 
          buzzer_sound();//Buzzer_KeySound();
 
@@ -275,7 +275,8 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
     run_t.fan_detect_voltage  =(uint16_t)((adc_fan_hex * 3300)/4096); //amplification 1000 ,3.111V -> 3111
 	//HAL_Delay(5);
 
-	if(run_t.fan_detect_voltage >600 &&  run_t.fan_detect_voltage < 3000){
+
+	if(run_t.fan_detect_voltage >400 &&  run_t.fan_detect_voltage < 3000){ //600
            detect_error_times=0;
 		   #if DEBUG
              printf("adc= %d",run_t.fan_detect_voltage);
@@ -304,7 +305,7 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
 			       HAL_Delay(100);
 				   buzzer_sound();//Buzzer_KeySound();
 			       HAL_Delay(100);
-				   SendWifiCmd_To_Order(FAN_WARNING);
+				   SendWifiData_To_Cmd(0x09,0x01);//SendWifiCmd_To_Order(FAN_WARNING);
 				  
 
 			   	}

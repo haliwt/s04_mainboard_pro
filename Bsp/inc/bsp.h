@@ -63,6 +63,10 @@ typedef struct _action_state{
 
 
   uint8_t gmouse;
+  uint8_t receive_copy_cmd;
+  uint8_t send_ack_cmd;
+
+  uint8_t gTimer_again_send_power_on_off;
 
 
 
@@ -74,6 +78,8 @@ extern action_state gpro_t;
 void bsp_Init(void); 
 
 
+
+uint8_t bcc_check(const unsigned char *data, int len) ;
 
 
 

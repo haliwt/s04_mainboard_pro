@@ -43,10 +43,14 @@ extern uint8_t wifiInputBuf[1];
 void sendData_Real_TimeHum(uint8_t hum,uint8_t temp);
 
 
-//void SendWifiData_To_PanelTime(uint8_t dat1);
-//void SendWifiData_To_PanelTemp(uint8_t dat1);
-void SendWifiCmd_To_Order(uint8_t odata);
-//void SendData_Real_GMT(uint8_t hdata,uint8_t mdata,uint8_t sdata);
+void SendWifiData_To_Cmd(uint8_t cmd,uint8_t data);
+
+void SendWifiData_Answer_Cmd(uint8_t cmd ,uint8_t data);
+
+void sendData_Real_TimeHum(uint8_t hum,uint8_t temp);
+
+void SendWifiData_To_Data(uint8_t cmd,uint8_t data);
+
 
 
 
@@ -55,6 +59,7 @@ void USART2_Cmd_Error_Handler(UART_HandleTypeDef *huart);
 
 void Answering_Signal_USART1_Handler(uint8_t cmdordata,uint8_t data);
 
+void SendWifiData_Answer_Cmd(uint8_t cmd ,uint8_t data);
 
 
 

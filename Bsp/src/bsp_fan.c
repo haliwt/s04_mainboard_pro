@@ -44,6 +44,14 @@ void ShutDown_AllFunction(void)
 
 
 }
+void Fan_Run_Fun(void)
+{
+
+    FAN_CW_SetLow();
+    FAN_CCW_SetHigh();  
+
+
+}
 
 
 
@@ -87,14 +95,7 @@ void Dry_Function(uint8_t sel)
 
 
 //FAN 
-void Fan_Run_Fun(void)
-{
 
-  Fan_CCW_Run_Max();
-
-
-
-}
 #if 0
 void fan_run_handler(void)
 {

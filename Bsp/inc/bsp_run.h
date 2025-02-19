@@ -93,6 +93,29 @@ typedef enum{
 
 }fan_level_state;
 
+typedef enum {
+
+  ack_null,
+  ack_power_on ,
+  ack_power_off,
+  ack_wifi_on,
+  ack_ptc_on,
+  ack_ptc_off,
+  ack_plasma_on,
+  ack_plasma_off,
+  ack_ultra_on,
+  ack_ultra_off,
+  //wifi cmd
+
+  ack_app_power_on,
+  ack_app_power_off,
+  ack_app_timer_power_on,
+  
+  
+
+}ack_cmd;
+
+
 
 
 
@@ -243,6 +266,9 @@ void Decode_RunCmd(uint8_t cmdType_1, uint8_t cmdType_2);
 
 
 void works_two_hours_detected_handler(void);
+
+void receive_data_fromm_display(uint8_t *pdata);
+
 
 #endif 
 
