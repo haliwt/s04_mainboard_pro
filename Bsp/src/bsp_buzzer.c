@@ -3,7 +3,7 @@
 
 void(*buzzer_sound)(void);
 
-static void Buzzer_KeySound(void);
+//static void Buzzer_KeySound(void);
 
 
 
@@ -22,13 +22,13 @@ void buzzer_init(void)
 
 
 
-static void Buzzer_KeySound(void)
+void Buzzer_KeySound(void)
 {
 
 //HAL_GPIO_TogglePin(BUZZER_GPIO,BUZZER_PIN);//BEEP=!BEEP;
     HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_4);
-    HAL_Delay(20);
-	Buzzer_KeySound_Off();
+    HAL_Delay(20);//osDelay(30);
+	HAL_TIM_PWM_Stop(&htim3,TIM_CHANNEL_4);//Buzzer_KeySound_Off();
    
     
  }

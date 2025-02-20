@@ -13,6 +13,7 @@ void buzzer_init(void);
 
 void BuzzerSound_Handler(void(*buzzer_sound_handler)(void));
 
+void Buzzer_KeySound(void);
 
 
 #endif 

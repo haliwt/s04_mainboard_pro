@@ -6,7 +6,7 @@
 /***********************************************************************************************************
 											函数声明
 ***********************************************************************************************************/
-//static void vTaskRunPro(void *pvParameters);
+static void vTaskRunPro(void *pvParameters);
 //static void vTaskMsgPro(void *pvParameters);
 static void vTaskStart(void *pvParameters);
 static void AppTaskCreate (void);
@@ -19,7 +19,7 @@ static void AppTaskCreate (void);
 /***********************************************************************************************************
 											变量声明
 ***********************************************************************************************************/
-//static TaskHandle_t xHandleTaskRunPro = NULL;
+static TaskHandle_t xHandleTaskRunPro = NULL;
 //static TaskHandle_t xHandleTaskMsgPro = NULL;
 static TaskHandle_t xHandleTaskStart = NULL;
 
@@ -90,94 +90,18 @@ void freeRTOS_Handler(void)
 *   Priority Ref: 2 (数值越小优先级越低，数字越大优先级越高)
 *   
 **********************************************************************************************************/
-#if 0
-static void vTaskMsgPro(void *pvParameters)
+#if 1
+static void vTaskRunPro(void *pvParameters)
 {
 	//vTaskDelay(pdMS_TO_TICKS(5000)); // 假设经过 5 秒后，条件变化
-    static uint8_t power_on_sound_flag ;
+   // static uint8_t power_on_sound_flag ;
+   static uint8_t power_on_sound_flag ;
     while(1)
     {
       
-    if(power_on_sound_flag == 0){
-        power_on_sound_flag ++;
-
-       //Buzzer_KeySound(void);
-        run_t.power_off_flag = 0xff;
-        buzzer_sound();
-
-    }
-     
-
-
-     if(run_t.RunCommand_Label== POWER_ON){
-        
-             mainboard_run_handler();
-
-             Read_TempSensor_Data();
-
-             works_two_hours_detected_handler();
-
-            // test_counter ++;
-
-      }
-      else{
-
-             PowerOff_Run_Pro();
-
-      }
-
     
-   
-     vTaskDelay(200); 
-     
-    }
 
-}
-#endif 
-/*
-*********************************************************************************************************
-*	Function Name: vTaskStart
-*	Function: priority is 1
-*	Input Ref:: pvParameters 是在创建该任务时传��的形参
-*	Return Ref: 
-*   Priority Ref: 1  (数��越小优先级越低，这个跟uCOS相反)
-*********************************************************************************************************
-*/
-static void vTaskStart(void *pvParameters)
-{
-  //  MSG_T *ptMsg;
-	BaseType_t xResult;
-    uint32_t ulValue;
-	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(300); /* 1.测试设定的-设置最大等待时间为50ms */
-    static uint8_t power_on_sound_flag ;
-	
-    while(1)
-    {
-		
-      
-         xResult = xTaskNotifyWait(0x00000000,      
-						           0xFFFFFFFF,      
-						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
-						          xMaxBlockTime);  /* 最大允许延迟时间,等待时间-block portMAX_DELAY */
-       if(xResult == pdPASS){
-
-        if((ulValue & DECODER_BIT_0 ) != 0){
-             gl_tMsg.disp_rx_cmd_done_flag = 0;
-
-             gl_tMsg.check_code =  bcc_check(gl_tMsg.usData,gl_tMsg.uid);
-
-               if(gl_tMsg.check_code == gl_tMsg.bcc_check_code){
-               
-                  receive_data_fromm_display(gl_tMsg.usData);
-                  
-                }
-                
-            }
-       
-        }
-        else{
-
-            if(power_on_sound_flag == 0){
+           if(power_on_sound_flag == 0){
                 power_on_sound_flag ++;
 
                 //Buzzer_KeySound(void);
@@ -205,7 +129,88 @@ static void vTaskStart(void *pvParameters)
 
             }
 
-       }
+    
+		
+    
+   
+     vTaskDelay(20); 
+     
+    }
+
+}
+#endif 
+/*
+*********************************************************************************************************
+*	Function Name: vTaskStart
+*	Function: priority is 1
+*	Input Ref:: pvParameters 是在创建该任务时传��的形参
+*	Return Ref: 
+*   Priority Ref: 1  (数��越小优先级越低，这个跟uCOS相反)
+*********************************************************************************************************
+*/
+static void vTaskStart(void *pvParameters)
+{
+  //  MSG_T *ptMsg;
+	BaseType_t xResult;
+    uint32_t ulValue;
+	const TickType_t xMaxBlockTime = pdMS_TO_TICKS(200); /* 1.测试设定的-设置最大等待时间为50ms */
+ //  static uint8_t power_on_sound_flag ;
+	
+    while(1)
+    {
+		
+      
+         xResult = xTaskNotifyWait(0x00000000,      
+						           0xFFFFFFFF,      
+						          &ulValue,        /* 保存ulNotifiedValue到变量ulValue中 */
+						          portMAX_DELAY);  /* 最大允许延迟时间,等待时间-block portMAX_DELAY */
+       if(xResult == pdPASS){
+
+        if((ulValue & DECODER_BIT_0 ) != 0){
+             gl_tMsg.disp_rx_cmd_done_flag = 0;
+
+             gl_tMsg.check_code =  bcc_check(gl_tMsg.usData,gl_tMsg.uid);
+
+               if(gl_tMsg.check_code == gl_tMsg.bcc_check_code){
+               
+                  receive_data_fromm_display(gl_tMsg.usData);
+                  
+                }
+                
+            }
+       
+        }
+//        else{
+//
+//            if(power_on_sound_flag == 0){
+//                power_on_sound_flag ++;
+//
+//                //Buzzer_KeySound(void);
+//                run_t.power_off_flag = 0xff;
+//                buzzer_sound();
+//
+//            }
+//
+//
+//
+//            if(run_t.RunCommand_Label== POWER_ON){
+//
+//                mainboard_run_handler();
+//
+//                Read_TempSensor_Data();
+//
+//                works_two_hours_detected_handler();
+//
+//            // test_counter ++;
+//
+//            }
+//            else{
+//
+//                PowerOff_Run_Pro();
+//
+//            }
+//
+//       }
 		
     }
 }
@@ -219,12 +224,12 @@ static void vTaskStart(void *pvParameters)
 void AppTaskCreate (void)
 {
 
-//	xTaskCreate( vTaskRunPro,    		/* 任务函数  */
-//                 "vTaskRunPro",  		/* 任务各1�7    */
-//                 128,         		/* stack大小，单位word，也就是4字节 */
-//                 NULL,        		/* 任务参数  */
-//                 1,           		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
-//                 &xHandleTaskRunPro); /* 任务句柄  */
+	xTaskCreate( vTaskRunPro,    		/* 任务函数  */
+                 "vTaskRunPro",  		/* 任务各1�7    */
+                 128,         		/* stack大小，单位word，也就是4字节 */
+                 NULL,        		/* 任务参数  */
+                 1,           		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 &xHandleTaskRunPro); /* 任务句柄  */
 	
 //	xTaskCreate( vTaskMsgPro,     		/* 任务函数  */
 //                 "vTaskMsgPro",   		/* 任务各1�7    */
@@ -238,7 +243,7 @@ void AppTaskCreate (void)
                  "vTaskStart",   		/* 任务各1�7    */
                  128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
-                 1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
+                 2,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */
 }
 

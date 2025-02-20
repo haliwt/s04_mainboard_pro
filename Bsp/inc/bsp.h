@@ -75,6 +75,31 @@ typedef struct _action_state{
 
 extern action_state gpro_t;
 
+typedef enum{
+
+	none_cmd,
+	power_cmd=0x01,
+	dry_cmd=0x02,
+	plasma_cmd,
+	mouse_cmd,
+	wifi_cmd,
+	buzzer_cmd =0x06,
+	ai_cmd = 0x07,
+	temp_warning,
+	fan_warning,
+	temp_hum_data = 0x1A,
+	beijing_times_data =0x1C,
+	dry_notice_cmd= 0x22, //don't sound
+	copy_cmd = 0xff
+
+
+}message_info;
+
+
+
+
+
+
 void bsp_Init(void); 
 
 

@@ -47,14 +47,15 @@ void receive_data_fromm_display(uint8_t *pdata)
           
            
           do{
-           
+            Buzzer_KeySound();//buzzer_sound();//buzzer_sound_fun();
+             SendWifiData_Answer_Cmd(0x01,0x01);
             run_t.RunCommand_Label= POWER_ON;
             run_t.run_masin_process_step =0;
             run_t.power_off_flag =0;
             Fan_Run_Fun();
             PTC_SetHigh(); // the moment open ptc  //WT.EDIT 2025.01.11
-            SendWifiData_Answer_Cmd(0x01,0x01);
-            buzzer_sound();//buzzer_sound_fun();
+           
+           
 
             
             }while(0);
@@ -64,11 +65,13 @@ void receive_data_fromm_display(uint8_t *pdata)
         else if(pdata[3] == 0x0){ //close 
            
            do{
+              Buzzer_KeySound();//buzzer_sound();
+              SendWifiData_Answer_Cmd(0x01,0x02); //power off .
               run_t.RunCommand_Label= POWER_OFF;
               run_t.run_masin_process_step =0;
               run_t.power_off_flag =0;
-              SendWifiData_Answer_Cmd(0x01,0x02); //power off .
-              buzzer_sound();
+              
+             
               
 
            }while(0);
@@ -81,18 +84,22 @@ void receive_data_fromm_display(uint8_t *pdata)
      case 0x02: //PTC打开关闭指令
 
      if(pdata[3] == 0x01){
-          buzzer_sound();
+          Buzzer_KeySound();//buzzer_sound();
 
           run_t.gDry = 1;
          if(run_t.interval_time_stop_run ==0){
+             SendWifiData_Answer_Cmd(0x02,0x01);
             PTC_SetHigh();
+           
          }
          
        }
        else if(pdata[3] == 0x0){
-          buzzer_sound();
+          Buzzer_KeySound();//buzzer_sound();//buzzer_sound();
+          SendWifiData_Answer_Cmd(0x02,0x0);
           run_t.gDry = 0;
            PTC_SetLow();
+           
 
        }
 
@@ -102,16 +109,18 @@ void receive_data_fromm_display(uint8_t *pdata)
 
         if(pdata[3] == 0x01){
            
-            buzzer_sound();
-           
+            Buzzer_KeySound();//buzzer_sound();
+           SendWifiData_Answer_Cmd(0x03,0x01);
             run_t.gPlasma=1;
             PLASMA_SetHigh();
+            
         }
         else if(pdata[3] == 0x0){
-           buzzer_sound();
-           
+           Buzzer_KeySound();//buzzer_sound();
+            SendWifiData_Answer_Cmd(0x03,0x0);
            run_t.gPlasma=0;
            PLASMA_SetLow();
+          
 
         }
 
@@ -122,46 +131,26 @@ void receive_data_fromm_display(uint8_t *pdata)
       case 0x04: //ultrasonic  打开关闭指令
 
         if(pdata[3] == 0x01){  //open 
-           buzzer_sound();
+           Buzzer_KeySound();//buzzer_sound();
+            SendWifiData_Answer_Cmd(mouse_cmd,0x01);
           gpro_t.gmouse=mouse_run;
           
           Ultrasonic_Pwm_Output();
+         
 
         }
         else if(pdata[3] == 0x0){ //close 
-          buzzer_sound();
+          Buzzer_KeySound();//buzzer_sound();
+          SendWifiData_Answer_Cmd(mouse_cmd,0x0);
 
           gpro_t.gmouse=mouse_stop;
           Ultrasonic_Pwm_Stop();
-        }
-
-
-     break;
-
-     #if 0
-
-      case 0x05: // link wifi command
-
-       if(pdata[3] == 0x01){  // link wifi 
-         //  buzzer_sound();
          
-          gpro_t.link_net_step =0;
-	      net_t.wifi_link_net_success=0;
-          gpro_t.wifi_led_fast_blink_flag =1;
-          gctl_t.wifi_config_net_lable=wifi_set_restor;
-		  wifi_t.runCommand_order_lable= wifi_link_tencent_cloud;//2 
-		  
-          gctl_t.gTimer_linkTencentCounter=0; //total times is 120s
-          SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28
-
-        }
-        else if(pdata[3] == 0x0){ //don't link wifi 
-
         }
 
 
      break;
-     #endif 
+
      
 
      case 0x06: //buzzer sound command 
@@ -169,7 +158,7 @@ void receive_data_fromm_display(uint8_t *pdata)
         if(pdata[3] == 0x01){  //buzzer sound 
 
          do{
-            buzzer_sound();
+            Buzzer_KeySound();//buzzer_sound();
              pdata[2] =0xff;
           }while(0);
            
@@ -177,6 +166,7 @@ void receive_data_fromm_display(uint8_t *pdata)
         }
         else if(pdata[3] == 0x0){ // don't buzzer sound .
 
+          
 
 
         }
@@ -186,14 +176,20 @@ void receive_data_fromm_display(uint8_t *pdata)
 
      case 0x07: //AI mode 
      if(pdata[3] == 0x01){  // AI 
+        Buzzer_KeySound();//buzzer_sound();
+        SendWifiData_Answer_Cmd(ai_cmd,0x01); //WT.EDIT 2025.01.07
 
         run_t.gDry = 1;
         run_t.gPlasma=1;
         gpro_t.gmouse=1;
+       
 
      }
      else{
-
+        
+         buzzer_sound();
+         SendWifiData_Answer_Cmd(ai_cmd,0); //WT.EDIT 2025.01.07
+     
 
      }
 
@@ -205,13 +201,14 @@ void receive_data_fromm_display(uint8_t *pdata)
       
        if(pdata[3] == 0x01){  //buzzer sound 
 
-           do{
+           
+            Buzzer_KeySound();//buzzer_sound();
             SendWifiData_Answer_Cmd(0x16,0x01); //WT.EDIT 2025.01.07
-            buzzer_sound();
+           
             
             pdata[2] =0xff;
 
-            }while(0);
+           
            
  
         }
