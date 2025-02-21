@@ -180,38 +180,7 @@ static void vTaskStart(void *pvParameters)
             }
        
         }
-//        else{
-//
-//            if(power_on_sound_flag == 0){
-//                power_on_sound_flag ++;
-//
-//                //Buzzer_KeySound(void);
-//                run_t.power_off_flag = 0xff;
-//                buzzer_sound();
-//
-//            }
-//
-//
-//
-//            if(run_t.RunCommand_Label== POWER_ON){
-//
-//                mainboard_run_handler();
-//
-//                Read_TempSensor_Data();
-//
-//                works_two_hours_detected_handler();
-//
-//            // test_counter ++;
-//
-//            }
-//            else{
-//
-//                PowerOff_Run_Pro();
-//
-//            }
-//
-//       }
-		
+
     }
 }
 

@@ -132,19 +132,19 @@ void receive_data_fromm_display(uint8_t *pdata)
 
         if(pdata[3] == 0x01){  //open 
            Buzzer_KeySound();//buzzer_sound();
-            SendWifiData_Answer_Cmd(mouse_cmd,0x01);
+         //   SendWifiData_Answer_Cmd(mouse_cmd,0x01);
           gpro_t.gmouse=mouse_run;
           
-          Ultrasonic_Pwm_Output();
+          //Ultrasonic_Pwm_Output();
          
 
         }
         else if(pdata[3] == 0x0){ //close 
           Buzzer_KeySound();//buzzer_sound();
-          SendWifiData_Answer_Cmd(mouse_cmd,0x0);
+        //  SendWifiData_Answer_Cmd(mouse_cmd,0x0);
 
           gpro_t.gmouse=mouse_stop;
-          Ultrasonic_Pwm_Stop();
+         // Ultrasonic_Pwm_Stop();
          
         }
 
@@ -228,17 +228,21 @@ void receive_data_fromm_display(uint8_t *pdata)
         
 
           run_t.gDry = 1;
+          SendWifiData_Answer_Cmd(0x22,0x01); //WT.EDIT 2025.01.07
          if(run_t.interval_time_stop_run ==0){
             PTC_SetHigh();
          }
+        }
          else{
+             SendWifiData_Answer_Cmd(0x22,0x00); //WT.EDIT 2025.01.07
 
              run_t.gDry = 0;
               PTC_SetLow();
 
 
          }
-          
+       
+     break;   
       
 
        case 0xFF: //copy send cmd acknowlege
@@ -249,17 +253,12 @@ void receive_data_fromm_display(uint8_t *pdata)
                 gpro_t.receive_copy_cmd = ack_app_power_on;
 
             }
-            else if(pdata[4]==2){ //smart phone normal :power off
+        }
+         else if(pdata[4]==2){ //smart phone normal :power off
                gpro_t.receive_copy_cmd = ack_app_power_off;
             }
 
-        }
-      
-
-
-    }
-
-      break;
+        break;
     
     default:
         break;
