@@ -23,8 +23,56 @@
 /* USER CODE BEGIN 0 */
 
 #include "bsp.h"
+
+#define USE_FAN_OLDER     0
+
+// 温度阈值定义
+#if USE_FAN_OLDER
+#define PTC_TEMP_THRESHOLD 373 // 90 degree
+#else
+#define PTC_TEMP_THRESHOLD 197 // 119 degree
+#endif
+
+// 传输给显示板 命令定义
+#define DISP_CMD_PTC_WARNING 		0x08
+#define DISP_DATA_PTC_WARNING 	0x01
+
+// 状态标志定义
+#define  PTC_OVERHEAT_FLAG 	1
+#define  PTC_NORMAL_FLAG 	0
+
+//FAN DEFINE
+
+// 风扇电压阈值定义
+#if USE_FAN_OLDER
+#define FAN_VOLTAGE_LOWER_THRESHOLD 400  // 下限阈值（旧版本）
+#define FAN_VOLTAGE_UPPER_THRESHOLD 3000 // 上限阈值
+#else
+#define FAN_VOLTAGE_LOWER_THRESHOLD 350  // 下限阈值（新版本）
+#define FAN_VOLTAGE_UPPER_THRESHOLD 3000 // 上限阈值
+#endif
+
+// DISPLAY BOARD 命令定义
+#define DISP_CMD_FAN_WARNING 			0x09
+#define DISP_DATA_FAN_WARNING 			0x01
+
+// 状态标志定义
+#define FAN_WARNING_FLAG 1
+#define FAN_NORMAL_FLAG 0
+
+// 蜂鸣器报警次数
+#define BUZZER_ALERT_TIMES 4
+
+
+
+
+
 static  uint16_t Get_Adc_Average(uint32_t ch,uint8_t times);
 static uint16_t Get_Adc_Channel(uint32_t ch)  ;
+static  void HandlePtcOverheat(void) ;
+static void HandleFanWarning(void);
+static uint8_t IsFanVoltageNormal(uint16_t voltage);
+
 uint8_t detect_error_times=0;
 
 
@@ -154,7 +202,7 @@ static uint16_t Get_Adc_Channel(uint32_t ch)
     ADC_ChannelConfTypeDef ADC1_ChanConf;
 
 	ADC1_ChanConf.Channel=ch;                                   //Í¨µÀ
-    ADC1_ChanConf.Rank= ADC_REGULAR_RANK_1;                                    //第一个序�?
+    ADC1_ChanConf.Rank= ADC_REGULAR_RANK_1;                                    //第一个序�?
     ADC1_ChanConf.SamplingTime=ADC_SAMPLETIME_1CYCLE_5;//ADC_SAMPLETIME_239CYCLES_5;      //²ÉÑùÊ±¼ä               
 
 
@@ -214,7 +262,10 @@ void Get_PTC_Temperature_Voltage(uint32_t channel,uint8_t times)
       printf("ptc= %d",run_t.ptc_temp_voltage);
 	#endif 
 
-   // run_t.ptc_temp_voltage = 200; //by test data 
+   if(run_t.ptc_temp_voltage < PTC_TEMP_THRESHOLD){
+	  run_t.ptc_too_heat_value =1;
+	  run_t.ptc_warning =1;
+   }
 }
 
 
@@ -229,10 +280,14 @@ void Get_PTC_Temperature_Voltage(uint32_t channel,uint8_t times)
 *****************************************************************/
 void Judge_PTC_Temperature_Value(void)
 {
-  //if(run_t.ptc_temp_voltage < 54 || run_t.ptc_temp_voltage ==54){ //75 degree
-   
-  //if(run_t.ptc_temp_voltage < 60 || run_t.ptc_temp_voltage ==60){ //70 degree
-  if(run_t.ptc_temp_voltage < 373 || run_t.ptc_temp_voltage ==373){ //90 degree
+
+	HandlePtcOverheat() ;
+#if 0
+	#if FAN_OLDER
+	  if(run_t.ptc_temp_voltage < 373 || run_t.ptc_temp_voltage ==373){ //90 degree
+	#else
+		  if(run_t.ptc_temp_voltage < 197){ //119 degree
+	#endif
 	    run_t.gDry =0 ;
 	    PTC_SetLow(); //turn off
         run_t.ptc_too_heat_value =1;
@@ -252,7 +307,44 @@ void Judge_PTC_Temperature_Value(void)
        HAL_Delay(100);
    	      
    }
+#endif
    
+}
+
+  /**
+   * @brief 处理 PTC 温度过高逻辑
+   * @param None
+   * @return None
+   */
+static void HandlePtcOverheat(void)
+{
+
+
+  if( run_t.ptc_warning == PTC_OVERHEAT_FLAG){
+	  // 关闭 PTC 加热器
+	  run_t.gDry =0 ;
+	  PTC_SetLow();
+
+	  // 设置温度过高标志
+
+
+	  // 发送 WiFi 警告命令
+	  SendWifiData_To_Cmd(DISP_CMD_PTC_WARNING , DISP_DATA_PTC_WARNING);
+
+	  // 触发蜂鸣器报警
+	   buzzer_sound();//Buzzer_KeySound();
+
+	   HAL_Delay(200);
+	   buzzer_sound();//Buzzer_KeySound();
+	   HAL_Delay(100);
+	   buzzer_sound();//Buzzer_KeySound();
+	   HAL_Delay(100);
+	   buzzer_sound();//Buzzer_KeySound();
+	   HAL_Delay(100);
+	   buzzer_sound();//Buzzer_KeySound();
+	   HAL_Delay(100);
+
+  }
 }
 
 /*****************************************************************
@@ -274,8 +366,64 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
 
     run_t.fan_detect_voltage  =(uint16_t)((adc_fan_hex * 3300)/4096); //amplification 1000 ,3.111V -> 3111
 	//HAL_Delay(5);
+    if(IsFanVoltageNormal(run_t.fan_detect_voltage)){  //1 --正常  0 --检测风扇故障
+    	detect_error_times =0; // 重置错误计数
+    	run_t.fan_warning = FAN_NORMAL_FLAG; // 清除风扇警告标志
+
+    }
+    else {
+        // 风扇电压异常
+        if (detect_error_times > 0) {
+            detect_error_times = 0; // 重置错误计数
+            HandleFanWarning(); // 处理风扇警告
+        }
+        else
+        	detect_error_times++; // 错误计数加 1
+    }
+
+}
+
+/**
+ * @brief 检测风扇电压是否正常
+ * @param voltage 风扇电压值
+ * @return uint8_t 1: 正常, 0: 异常
+ */
+static uint8_t IsFanVoltageNormal(uint16_t voltage)
+{
+    return (voltage > FAN_VOLTAGE_LOWER_THRESHOLD && voltage < FAN_VOLTAGE_UPPER_THRESHOLD);
+}
+
+/**
+ * @brief 处理风扇警告逻辑
+ * @param None
+ * @return None
+ */
+static void HandleFanWarning(void)
+{
+    // 设置风扇警告标志
+    run_t.fan_warning = FAN_WARNING_FLAG;
+
+    // 关闭干燥功能
+    run_t.gDry = 0;
+
+    // 关闭 PTC 加热器
+    PTC_SetLow();
+
+    // 触发蜂鸣器报警
+    for (uint8_t i = 0; i < BUZZER_ALERT_TIMES; i++) {
+        buzzer_sound();
+        HAL_Delay(i == BUZZER_ALERT_TIMES - 1 ? 100 : 200); // 最后一次延迟 100ms，其他延迟 200ms
+    }
+
+    // 发送 WiFi 警告命令
+    SendWifiData_To_Cmd(DISP_CMD_FAN_WARNING, DISP_DATA_FAN_WARNING);
+}
 
 
+
+#if 0
+
+#if FAN_OLDER
 	if(run_t.fan_detect_voltage >400 &&  run_t.fan_detect_voltage < 3000){ //600
            detect_error_times=0;
 		   #if DEBUG
@@ -283,6 +431,15 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
 		   #endif 
            run_t.fan_warning = 0;
     }
+#else
+	if(run_t.fan_detect_voltage >350 &&  run_t.fan_detect_voltage < 3000){ //600
+	           detect_error_times=0;
+			   #if DEBUG
+	             printf("adc= %d",run_t.fan_detect_voltage);
+			   #endif
+	           run_t.fan_warning = 0;
+	  }
+#endif
 	else{
 
 	          
@@ -313,5 +470,5 @@ void Get_Fan_Adc_Fun(uint32_t channel,uint8_t times)
 
      }
 }
-
+#endif
 /* USER CODE END 1 */

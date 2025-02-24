@@ -96,21 +96,18 @@ typedef enum{
 typedef enum {
 
   ack_null,
-  ack_power_on ,
-  ack_power_off,
-  ack_wifi_on,
-  ack_ptc_on,
-  ack_ptc_off,
-  ack_plasma_on,
-  ack_plasma_off,
-  ack_ultra_on,
-  ack_ultra_off,
-  //wifi cmd
-
-  ack_app_power_on,
-  ack_app_power_off,
-  ack_app_timer_power_on,
+  ack_power,
+  ack_ptc,
+  ack_plasma,
+  ack_mouse,
+  ack_wifi=0x05,
+ // ack_buzzer,
+  ack_ai=0x07,
+  ack_temp_warning = 0x08,
+  ack_fan_warning ,
   
+  ack_with_buzzer=0x16,
+  ack_dry_notice=0x22,
   
 
 }ack_cmd;
@@ -267,7 +264,7 @@ void Decode_RunCmd(uint8_t cmdType_1, uint8_t cmdType_2);
 
 void works_two_hours_detected_handler(void);
 
-void receive_data_fromm_display(uint8_t *pdata);
+void receive_data_from_display(const uint8_t *pdata);
 
 
 #endif 

@@ -29,7 +29,7 @@ uint8_t power_off_fan;
     *Return Ref:NO
     *
 **********************************************************************/
-void receive_data_fromm_display(uint8_t *pdata)
+void receive_data_from_display(const uint8_t *pdata)
 {
 
    if(pdata[1] == 0x01){
@@ -48,7 +48,7 @@ void receive_data_fromm_display(uint8_t *pdata)
            
           do{
             Buzzer_KeySound();//buzzer_sound();//buzzer_sound_fun();
-             SendWifiData_Answer_Cmd(0x01,0x01);
+             SendWifiData_Answer_Cmd(0x01,0x01); // cmd =0xff,data =0 ,frameType = 0x01 --open
             run_t.RunCommand_Label= POWER_ON;
             run_t.run_masin_process_step =0;
             run_t.power_off_flag =0;
@@ -66,7 +66,7 @@ void receive_data_fromm_display(uint8_t *pdata)
            
            do{
               Buzzer_KeySound();//buzzer_sound();
-              SendWifiData_Answer_Cmd(0x01,0x02); //power off .
+              SendWifiData_Answer_Cmd(0x01,0);//(0x01,0x02); //power off .
               run_t.RunCommand_Label= POWER_OFF;
               run_t.run_masin_process_step =0;
               run_t.power_off_flag =0;
@@ -96,7 +96,7 @@ void receive_data_fromm_display(uint8_t *pdata)
        }
        else if(pdata[3] == 0x0){
           Buzzer_KeySound();//buzzer_sound();//buzzer_sound();
-          SendWifiData_Answer_Cmd(0x02,0x0);
+          SendWifiData_Answer_Cmd(0x02,0);
           run_t.gDry = 0;
            PTC_SetLow();
            
@@ -117,7 +117,7 @@ void receive_data_fromm_display(uint8_t *pdata)
         }
         else if(pdata[3] == 0x0){
            Buzzer_KeySound();//buzzer_sound();
-            SendWifiData_Answer_Cmd(0x03,0x0);
+            SendWifiData_Answer_Cmd(0x03,0);
            run_t.gPlasma=0;
            PLASMA_SetLow();
           
@@ -159,7 +159,7 @@ void receive_data_fromm_display(uint8_t *pdata)
 
          do{
             Buzzer_KeySound();//buzzer_sound();
-             pdata[2] =0xff;
+            //pdata[2] =0xff;
           }while(0);
            
 
@@ -205,12 +205,6 @@ void receive_data_fromm_display(uint8_t *pdata)
             Buzzer_KeySound();//buzzer_sound();
             SendWifiData_Answer_Cmd(0x16,0x01); //WT.EDIT 2025.01.07
            
-            
-            pdata[2] =0xff;
-
-           
-           
- 
         }
         else if(pdata[3] == 0x0){ // don't buzzer sound .
  
@@ -234,29 +228,31 @@ void receive_data_fromm_display(uint8_t *pdata)
          }
         }
          else{
-             SendWifiData_Answer_Cmd(0x22,0x00); //WT.EDIT 2025.01.07
+             SendWifiData_Answer_Cmd(0x22,0); //WT.EDIT 2025.01.07
 
              run_t.gDry = 0;
               PTC_SetLow();
-
-
-         }
+        }
        
      break;   
       
 
        case 0xFF: //copy send cmd acknowlege
-     //power on or power off 
-        if(pdata[3]==0x31){ //smart phone normal :power on
+        switch(pdata[3]){
+        case ack_power:
+        if(pdata[4]==0x01){ //smart phone normal :power on
             if(pdata[4]==1){ //power on
 
-                gpro_t.receive_copy_cmd = ack_app_power_on;
+                gpro_t.receive_copy_cmd = 1;
 
             }
         }
-         else if(pdata[4]==2){ //smart phone normal :power off
-               gpro_t.receive_copy_cmd = ack_app_power_off;
+         else if(pdata[4]==0){ //smart phone normal :power off
+               gpro_t.receive_copy_cmd = 2;
             }
+
+         break;
+         }
 
         break;
     
@@ -409,13 +405,6 @@ void receive_data_fromm_display(uint8_t *pdata)
      }
      #endif
    
-
-
-
-
-
-
-
 /**********************************************************************
 *
 *Function Name:void Decode_RunCmd(void)
@@ -461,7 +450,7 @@ void Decode_RunCmd(uint8_t cmdType_1, uint8_t cmdType_2)
 			 
 		
 		}
-
+        break;
 		case 'T': //works time with works two hours have a rest ten minutes
 		   if(run_t.gPower_On==POWER_ON){
 			

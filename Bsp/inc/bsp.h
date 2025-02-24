@@ -15,6 +15,7 @@
 
 
 
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
@@ -39,6 +40,7 @@
 #include "interrupt_manager.h"
 #include "bsp_cmd_link.h"
 #include "bsp_run.h"
+#include "bsp_adc.h"
 #include "bsp_freertos.h"
 
 

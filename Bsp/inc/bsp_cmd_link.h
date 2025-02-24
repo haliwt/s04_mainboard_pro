@@ -30,9 +30,9 @@ typedef struct _usart_cmd_t {
 
 
 
-extern uint8_t inputBuf[5];
+//extern uint8_t inputBuf[5];
 
-extern uint8_t  inputCmd[5];
+//extern uint8_t  inputCmd[1];
 extern uint8_t wifiInputBuf[1];
 
 
@@ -43,13 +43,13 @@ extern uint8_t wifiInputBuf[1];
 void sendData_Real_TimeHum(uint8_t hum,uint8_t temp);
 
 
-void SendWifiData_To_Cmd(uint8_t cmd,uint8_t data);
+void SendWifiData_To_Cmd(uint8_t cmd,uint8_t frameType);
 
-void SendWifiData_Answer_Cmd(uint8_t cmd ,uint8_t data);
+void SendWifiData_Answer_Cmd(uint8_t cmd ,uint8_t frameType);
 
-void sendData_Real_TimeHum(uint8_t hum,uint8_t temp);
 
-void SendWifiData_To_Data(uint8_t cmd,uint8_t data);
+
+void SendWifiData_To_Data(uint8_t cmd,uint8_t data,uint8_t frameType);
 
 
 
@@ -59,7 +59,7 @@ void USART2_Cmd_Error_Handler(UART_HandleTypeDef *huart);
 
 void Answering_Signal_USART1_Handler(uint8_t cmdordata,uint8_t data);
 
-void SendWifiData_Answer_Cmd(uint8_t cmd ,uint8_t data);
+
 
 
 

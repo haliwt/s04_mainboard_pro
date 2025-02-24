@@ -5,7 +5,7 @@
 
 void freeRTOS_Handler(void);
 
-
+extern uint8_t inputBuf[1];
 
 
 
