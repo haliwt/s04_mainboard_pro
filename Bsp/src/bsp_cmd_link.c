@@ -78,9 +78,9 @@ static uint8_t PrepareAnswerFrame(uint8_t cmd, uint8_t *data, uint8_t dataLength
     else{
 
         outputBuf[6] = 0xFE;
-        outputBuf[7] = bcc_check(outputBuf, 6+dataLength); // BCC 校验
+        outputBuf[7] = bcc_check(outputBuf, 7); // BCC 校验
 
-        return 8 + dataLength; // 返回帧长度
+        return 8 ; // 返回帧长度
     }
 
 }
@@ -136,7 +136,7 @@ void sendData_Real_TimeHum(uint8_t hum, uint8_t temp)
 void SendData_Set_Command(uint8_t cmd,uint8_t frameType )
 {
    // uint8_t dataArray[1] = {data}; // 命令数据
-    transferSize = PrepareFrame(cmd, 0, 0, frameType); // 准备数据帧 0x01-open
+    transferSize = PrepareFrame(cmd, 0, 0, frameType); // 指令：数据是0，长度是0：
     SendData(outputBuf, transferSize); // 发送数据
 }
 
@@ -149,7 +149,7 @@ void SendData_Set_Command(uint8_t cmd,uint8_t frameType )
 void SendWifiData_Answer_Cmd(uint8_t cmd,uint8_t frameType)
 {
    // uint8_t dataArray[1] = {data}; // 命令数据
-    transferSize = PrepareAnswerFrame(cmd,0,0,frameType); // 准备数据帧
+    transferSize = PrepareAnswerFrame(cmd,0,0,frameType); // 指令：数据是0，长度是0：
     SendData(outputBuf, transferSize); // 发送数据
 }
 
@@ -161,7 +161,7 @@ void SendWifiData_Answer_Cmd(uint8_t cmd,uint8_t frameType)
 void SendWifiData_To_Cmd(uint8_t cmd,uint8_t frameType)
 {
     //uint8_t dataArray[1] = {data}; // 命令数据
-    transferSize = PrepareFrame(cmd,0,0, frameType); // 准备数据帧
+    transferSize = PrepareFrame(cmd,0,0, frameType); // 指令：数据是0，长度是0：
     SendData(outputBuf, transferSize); // 发送数据
 }
 
@@ -173,7 +173,7 @@ void SendWifiData_To_Cmd(uint8_t cmd,uint8_t frameType)
 void SendWifiData_To_Data(uint8_t cmd, uint8_t data,uint8_t datalen)
 {
     uint8_t dataArray[1] = {data}; // 数据
-    transferSize = PrepareFrame(cmd, dataArray, datalen, 0x0F); // 0x0F -->is data don't command备数据帧
+    transferSize = PrepareFrame(cmd, dataArray, datalen, 0x0F); // 传输的是数据：帧类型：0x0F -->is data don't command备数据帧
     SendData(outputBuf, transferSize); // 发送数据
 }
 

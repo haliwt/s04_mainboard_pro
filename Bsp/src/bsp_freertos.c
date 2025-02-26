@@ -176,12 +176,13 @@ static void vTaskStart(void *pvParameters)
 
        
         }
-        else{
 
-            HandlePowerOnLogic() ;
-        }
 
      }
+     else{
+
+             HandlePowerOnLogic() ;
+          }
     }
 }
 /**********************************************************************************************************
@@ -231,7 +232,7 @@ static void UART_ReceiveStateMachine(uint8_t data)
 
     switch (appData.uart_state) {
         case 0: // 初始状态，等待起始字节
-            if (data == 0xA5) { // 0xA5 -- 显示命令头
+            if (data == 0xA5) { // 0xA5 -- from display board tx data.示命令头
                 appData.uart_msg.rx_data_counter = 0;
                 appData.uart_msg.usData[appData.uart_msg.rx_data_counter] = data;
                 appData.uart_state = 1;
@@ -259,8 +260,7 @@ static void UART_ReceiveStateMachine(uint8_t data)
                 }
 
                 if (appData.uart_msg.usData[appData.uart_msg.rx_data_counter] == 0xFE &&
-                    appData.uart_msg.rx_end_flag == 0 &&
-                    appData.uart_msg.rx_data_counter > 4) {
+                    appData.uart_msg.rx_end_flag == 0 && appData.uart_msg.rx_data_counter > 4){  //frame of end flag is 0xFE
                     appData.uart_msg.rx_end_flag = 1;
                 }
             }
@@ -293,7 +293,7 @@ void AppTaskCreate (void)
 	
 	xTaskCreate( vTaskStart,     		/* 任务函数  */
                  "vTaskStart",   		/* 任务各1�7    */
-                 256,            		/* 任务栈大小，单位word，也就是4字节 */
+                 128,            		/* 任务栈大小，单位word，也就是4字节 */
                  NULL,           		/* 任务参数  */
                  1,              		/* 任务优先纄1�7 数��越小优先级越低，这个跟uCOS相反 */
                  &xHandleTaskStart );   /* 任务句柄  */

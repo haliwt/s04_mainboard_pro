@@ -66,7 +66,7 @@ void receive_data_from_display(const uint8_t *pdata)
            
            do{
               Buzzer_KeySound();//buzzer_sound();
-              SendWifiData_Answer_Cmd(0x01,0);//(0x01,0x02); //power off .
+              SendWifiData_Answer_Cmd(0x01,0x02);//(0x01,0x02); //power off .
               run_t.RunCommand_Label= POWER_OFF;
               run_t.run_masin_process_step =0;
               run_t.power_off_flag =0;
@@ -96,7 +96,7 @@ void receive_data_from_display(const uint8_t *pdata)
        }
        else if(pdata[3] == 0x0){
           Buzzer_KeySound();//buzzer_sound();//buzzer_sound();
-          SendWifiData_Answer_Cmd(0x02,0);
+          SendWifiData_Answer_Cmd(0x02,0x02);
           run_t.gDry = 0;
            PTC_SetLow();
            
@@ -117,7 +117,7 @@ void receive_data_from_display(const uint8_t *pdata)
         }
         else if(pdata[3] == 0x0){
            Buzzer_KeySound();//buzzer_sound();
-            SendWifiData_Answer_Cmd(0x03,0);
+            SendWifiData_Answer_Cmd(0x03,0x02);
            run_t.gPlasma=0;
            PLASMA_SetLow();
           
@@ -188,7 +188,7 @@ void receive_data_from_display(const uint8_t *pdata)
      else{
         
          buzzer_sound();
-         SendWifiData_Answer_Cmd(ai_cmd,0); //WT.EDIT 2025.01.07
+         SendWifiData_Answer_Cmd(ai_cmd,0x02); //WT.EDIT 2025.01.07
      
 
      }
@@ -228,7 +228,7 @@ void receive_data_from_display(const uint8_t *pdata)
          }
         }
          else{
-             SendWifiData_Answer_Cmd(0x22,0); //WT.EDIT 2025.01.07
+             SendWifiData_Answer_Cmd(0x22,0x02); //WT.EDIT 2025.01.07
 
              run_t.gDry = 0;
               PTC_SetLow();
