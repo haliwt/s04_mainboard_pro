@@ -71,7 +71,7 @@ static uint8_t PrepareAnswerFrame(uint8_t cmd, uint8_t *data, uint8_t dataLength
     if (dataLength > 0) {
         memcpy(&outputBuf[6], data, dataLength); // 拷贝数据
          outputBuf[7+ dataLength] = 0xFE; // 帧尾
-         outputBuf[8 + dataLength] = bcc_check(outputBuf, 6 + dataLength); // BCC 校验
+         outputBuf[8 + dataLength] = bcc_check(outputBuf, 8 + dataLength); // BCC 校验
           
         return 9 + dataLength; // 返回帧长度
     }
