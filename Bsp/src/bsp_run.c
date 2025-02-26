@@ -741,7 +741,7 @@ void mainboard_run_handler(void)
 
 		   case 0:
 
-            run_t.gPower_On = POWER_ON;
+
             run_t.gTimer_read_dht11_temp_value=20;
             run_t.gTimer_continuce_works_time=0;
             run_t.interval_time_stop_run=0;
@@ -750,6 +750,7 @@ void mainboard_run_handler(void)
             run_t.gTimer_ptc_adc_times=0;
             run_t.open_ptc_detected_flag=0;
             run_t.power_on_send_data_flag=0;
+
 
             run_t.gPower_On=POWER_ON;
 
@@ -770,6 +771,10 @@ void mainboard_run_handler(void)
 
 
 				}
+				if(run_t.power_on_send_data_flag< 10){ // Update_DHT11_Value(); //WT.EDIT.2025.02.26
+				     run_t.power_on_send_data_flag ++;
+				      Update_DHT11_Value();
+				}
 				 run_t.run_masin_process_step =3;
             break;
 
@@ -783,6 +788,11 @@ void mainboard_run_handler(void)
 				
 	                
 
+				}
+
+				if(run_t.power_on_send_data_flag< 10){// Update_DHT11_Value(); //WT.EDIT.2025.02.26
+				   run_t.power_on_send_data_flag ++;
+					Update_DHT11_Value();
 				}
 	              run_t.run_masin_process_step=4;
 			break;
@@ -836,6 +846,10 @@ void mainboard_run_handler(void)
 		     }
 
 		   }
+			if(run_t.power_on_send_data_flag< 10){
+					 run_t.power_on_send_data_flag ++;
+					  Update_DHT11_Value();
+			}
 		   run_t.run_masin_process_step=1;
 		   break;
 

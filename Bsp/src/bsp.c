@@ -4,6 +4,7 @@ void bsp_Init(void)
 {
 
 buzzer_init();
+dht11_init();
 
 }
 
