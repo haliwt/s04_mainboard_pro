@@ -151,7 +151,7 @@ uint8_t dht11_init(void)
     GPIO_InitStruct.Pin = DHT11_DQ_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;            /* 开漏输出 */
     GPIO_InitStruct.Pull  = GPIO_PULLUP;                    /* 上拉 */
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;//GPIO_SPEED_FREQ_HIGH;          /* 高速 */
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;//GPIO_SPEED_FREQ_HIGH;          /* 高速 */
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);   /* 初始化DHT11_DQ引脚 */
     /* DHT11_DQ引脚模式设置,开漏输出,上拉, 这样就不用再设置IO方向了, 开漏输出的时候(=1), 也可以读取外部信号的高低电平 */
 
