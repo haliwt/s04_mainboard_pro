@@ -123,7 +123,7 @@ static uint8_t PrepareFrame(uint8_t cmd, uint8_t *data, uint8_t dataLength, uint
 ******************************************************************************/
 void sendData_Real_TimeHum(uint8_t hum, uint8_t temp)
 {
-    uint8_t data[2] = {hum, temp}; // 湿度和温度数据
+    uint8_t data[2] = {hum,temp}; // 湿度和温度数据
     transferSize = PrepareFrame(0x1A, data, 2, 0x0F); // 准备数据帧 0x0F --表示传输的是数据
     SendData(outputBuf, transferSize); // 发送数据
 }

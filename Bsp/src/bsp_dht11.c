@@ -45,7 +45,7 @@ uint8_t dht11_check(void)
         }
         if (retry >= 100) rval = 1;
     }
-
+    
     return rval;
 }
 
@@ -78,7 +78,7 @@ uint8_t dht11_read_bit(void)
     {
         return 1;
     }
-    else
+    else 
     {
         return 0;
     }
@@ -132,7 +132,7 @@ uint8_t dht11_read_data(uint8_t *temp, uint8_t *humi)
     {
         return 1;
     }
-
+    
     return 0;
 }
 
@@ -144,45 +144,31 @@ uint8_t dht11_read_data(uint8_t *temp, uint8_t *humi)
  */
 uint8_t dht11_init(void)
 {
-	 GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef gpio_init_struct={0};
 
-    __HAL_RCC_GPIOB_CLK_ENABLE();//DHT11_DQ_GPIO_CLK_ENABLE();     /* 开启DQ引脚时钟 */
+    DHT11_DQ_GPIO_CLK_ENABLE();     /* 开启DQ引脚时钟 */
 
-    GPIO_InitStruct.Pin = DHT11_DQ_GPIO_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;            /* 开漏输出 */
-    GPIO_InitStruct.Pull  = GPIO_PULLUP;                    /* 上拉 */
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;//GPIO_SPEED_FREQ_HIGH;          /* 高速 */
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);   /* 初始化DHT11_DQ引脚 */
+    gpio_init_struct.Pin = DHT11_DQ_GPIO_PIN;
+    gpio_init_struct.Mode = GPIO_MODE_OUTPUT_OD;            /* 开漏输出 */
+    gpio_init_struct.Pull = GPIO_PULLUP;                    /* 上拉 */
+    gpio_init_struct.Speed = GPIO_SPEED_FREQ_HIGH;          /* 高速 */
+    HAL_GPIO_Init(DHT11_DQ_GPIO_PORT, &gpio_init_struct);   /* 初始化DHT11_DQ引脚 */
     /* DHT11_DQ引脚模式设置,开漏输出,上拉, 这样就不用再设置IO方向了, 开漏输出的时候(=1), 也可以读取外部信号的高低电平 */
-
 
     dht11_reset();
     return dht11_check();
 }
 
 
-
-
-//void  Dht11_Read_TempHumidity_Handler(DHT11_Data_TypeDef * pdth11)
-//{
-//	if(DHT11_Read_TempAndHumidity(pdth11) == 0){
-//
-//		   run_t.gDht11_humidity = (pdth11->humi_high8bit);
-//
-//		   run_t.gDht11_temperature = (pdth11->temp_high8bit);
-//
-//	 }
-//
-//}
-
 void Update_DHT11_Value(void)
 {
     
-  
+     DISABLE_INT();
 	 dht11_read_data(&run_t.gDht11_temperature,&run_t.gDht11_humidity);
+     ENABLE_INT();
 	
 
-	sendData_Real_TimeHum(run_t.gDht11_humidity ,run_t.gDht11_temperature);
+	sendData_Real_TimeHum(run_t.gDht11_humidity,run_t.gDht11_temperature);
 	
     
 }

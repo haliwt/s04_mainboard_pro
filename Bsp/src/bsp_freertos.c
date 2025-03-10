@@ -212,7 +212,7 @@ static void HandlePowerOnLogic(void)
         buzzer_sound();
     }
 
-    if (run_t.RunCommand_Label == POWER_ON) {
+    if (run_t.RunCommand_Label == POWER_ON){
         mainboard_run_handler();
         Read_TempSensor_Data();
         works_two_hours_detected_handler();
