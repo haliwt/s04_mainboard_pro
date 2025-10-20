@@ -48,7 +48,7 @@
 #define FAN_VOLTAGE_LOWER_THRESHOLD 400  // 下限阈值（旧版本）
 #define FAN_VOLTAGE_UPPER_THRESHOLD 3000 // 上限阈值
 #else
-#define FAN_VOLTAGE_LOWER_THRESHOLD 350  // 下限阈值（新版本）
+#define FAN_VOLTAGE_LOWER_THRESHOLD 400//350  // 下限阈值（新版本）
 #define FAN_VOLTAGE_UPPER_THRESHOLD 3000 // 上限阈值
 #endif
 
